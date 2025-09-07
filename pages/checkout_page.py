@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import (By)
 
 
 
-class Checkout(BasePage):
+class CheckoutPage(BasePage):
     LINK_HOMEPAGE = (By.CLASS_NAME, "mr-6 flex items-center space-x-2")
     #BUTTON_CATEGORIES = (By.ID, "radix-«R2bb»-trigger-radix-«Rebb»")
     BUTTON_CATEGORIES = (By.XPATH, '//button[contains(., "Categories")]')

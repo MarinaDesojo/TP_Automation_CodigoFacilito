@@ -10,9 +10,9 @@ from pages.products_page import ProductPage
 from pages.finish_page import FinishPage
 from pages.complete_page import CompletePage
 from pages.home_page import HomePage
-from pages.electronics_page import Electronics
-from pages.product_detail_page import PDP
-from pages.checkout_page import Checkout
+from pages.electronics_page import ElectronicsPage
+from pages.product_detail_page import PDPage
+from pages.checkout_page import CheckoutPage
 from pages.confirmation_page import ConfirmationPage
 from tests.conftest import driver
 
@@ -90,10 +90,10 @@ def test_homepage_categories(driver):
 
 def test_shop_e2e(driver):
     homepage = HomePage(driver)
-    electronics = Electronics(driver)
-    pdp = PDP(driver)
+    electronics = ElectronicsPage(driver)
+    pdp = PDPage(driver)
     cart = CartPage(driver)
-    checkout = Checkout(driver)
+    checkout = CheckoutPage(driver)
     confirmation = ConfirmationPage(driver)
 
     homepage.load()
