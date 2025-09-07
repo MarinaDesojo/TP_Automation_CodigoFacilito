@@ -1,5 +1,5 @@
 #para que sirve? para contener los metodos genericos que van a estar presentes en todos los page objects
-#desde escribir, a hacer click, obtener un dato, etc, y se puede actualizar desde aca para actualizar todo lode mas
+#desde escribir, a hacer click, obtener un dato, etc, y se puede actualizar desde aca para actualizartodo lode mas
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
