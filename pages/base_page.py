@@ -7,9 +7,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 class BasePage:
-
 
     def __init__(self, driver) -> None:
         self.driver = driver
@@ -59,11 +59,35 @@ class BasePage:
     #         EC.visibility_of_element_located(locator)
     #     )
 
-    def wait_until_invisible(self, locator, timeout=10) -> bool:
+    # def wait_until_invisible(self, locator, timeout=10) -> bool:
+    #     try:
+    #         WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
+    #             EC.invisibility_of_element_located(locator)
+    #         )
+    #         return True
+    #     except:
+    #         return False
+
+    def wait_until_invisible(self, locator, appear_timeout=2, disappear_timeout=10):  # espera a que aparezca y desaparezca el overlay
         try:
-            WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
+            WebDriverWait(self.driver, appear_timeout, poll_frequency=0.1).until(
+                EC.presence_of_element_located(locator)
+            )
+            WebDriverWait(self.driver, disappear_timeout, poll_frequency=0.1).until(
                 EC.invisibility_of_element_located(locator)
             )
-            return True
-        except:
-            return False
+        except TimeoutException:
+            pass
+
+    def wait_until_visible(self, locator, timeout=5): # espera a que aparezca un elemento
+        try:
+            WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
+                EC.visibility_of_element_located(locator)
+            )
+        except TimeoutException:
+            raise AssertionError(f"El elemento {locator} no apareció dentro de {timeout} segundos.")
+
+
+
+    #def assert_inventory_url(self): #en realidad tiene que ir a la web de productos
+    #    assert "inventory" in driver.current_url, "No te encuentras en URL /inventory" #valida que la palabra inventory esta en la URL

@@ -1,17 +1,12 @@
 import time
-
 import pytest
 #page objects
 from pages.base_page import BasePage #importa la clase base page
-from pages.home_page import HomePage
 from pages.login_page import LoginPage
 from pages.cart_page import CartPage
-from pages.products_page import ProductPage
-from pages.finish_page import FinishPage
-from pages.complete_page import CompletePage
 from pages.home_page import HomePage
 from pages.electronics_page import ElectronicsPage
-from pages.product_detail_page import PDPage
+from pages.product_detail_page import ProductPage
 from pages.checkout_page import CheckoutPage
 from pages.confirmation_page import ConfirmationPage
 from tests.conftest import driver
@@ -29,38 +24,13 @@ CITY = "fakecity"
 COUNTRY = "fakecountry"
 
 @pytest.mark.e2e #e2e = end to end, de inicio a fin
-def test_user_purchase_product_positive(driver):
-    products = ProductPage(driver) #estas se llaman instancias
-    login = LoginPage(driver)
-    cart = CartPage(driver)
-    finish = FinishPage(driver)
-    complete = CompletePage(driver)
-    homepage = HomePage(driver)
-
-    login.load()
-    login.login_as_user(EMAIL_USER, PASSWORD)
-    products.add_product_by_name("sauce-labs-backpack")
-    products.go_to_shopping_cart()
-    cart.go_to_checkout()
-    cart.complete_information_form(FIRST_NAME, LAST_NAME, POSTAL_CODE)
-    finish.check_info()
-    finish.total_price()
-    finish.finish_checkout()
-    complete.validate_purchase_completion_message()
-    complete.checkout_finish()
-
-
-    #Ir a la URL del login
-    #Login -> llenar los campos
-
-
 def test_homepage_to_login_page_login(driver):
     homepage = HomePage(driver)
     login = LoginPage(driver)
 
     homepage.load()
     homepage.go_to_login_page()
-    login.login_as_user(EMAIL_USER, PASSWORD)
+    login.fill_login_form(EMAIL_USER, PASSWORD)
 
 def test_homepage_to_login_page_login_fail(driver): #no se por que no falla.. cuando lo hago a mano si falla
     homepage = HomePage(driver)
@@ -68,7 +38,7 @@ def test_homepage_to_login_page_login_fail(driver): #no se por que no falla.. cu
 
     homepage.load()
     homepage.go_to_login_page()
-    login.login_as_user(EMAIL_USER_WRONG, PASSWORD)
+    login.fill_login_form(EMAIL_USER_WRONG, PASSWORD)
 
 
 def test_homepage_search(driver):
@@ -76,6 +46,7 @@ def test_homepage_search(driver):
 
     homepage.load()
     homepage.search_product("smartphone") #la web no tiene motor de busqueda pero al menos se puede escribir en el campo
+    time.sleep(1)
 
 
 def test_homepage_categories(driver):
@@ -91,18 +62,42 @@ def test_homepage_categories(driver):
 def test_shop_e2e(driver):
     homepage = HomePage(driver)
     electronics = ElectronicsPage(driver)
-    pdp = PDPage(driver)
+    pdp = ProductPage(driver)
     cart = CartPage(driver)
     checkout = CheckoutPage(driver)
     confirmation = ConfirmationPage(driver)
 
     homepage.load()
     homepage.go_to_electronics_page()
-    electronics.go_to_product_page()
-    pdp.add_product_qty()
-    pdp.add_product_to_cart()
+    electronics.go_to_product_page_by_number("24")
+    pdp.increase_product_qty("24")
+    pdp.add_to_cart("24")
+    homepage.check_cart_badge_amount(2)
     pdp.go_to_cart_page()
     cart.go_to_checkout()
     checkout.fill_checkout_form(FIRST_NAME, LAST_NAME, EMAIL_USER, PHONE_NUMBER, ADDRESS, CITY, ZIP_CODE, COUNTRY)
-    time.sleep(1)
     confirmation.return_to_home()
+
+def test_cart(driver):
+    homepage = HomePage(driver)
+    cart = CartPage(driver)
+    electronics = ElectronicsPage(driver)
+
+    homepage.load()
+    homepage.go_to_homepage()
+    homepage.go_to_electronics_page()
+    electronics.add_product_to_cart_by_number("21")
+    electronics.add_product_to_cart_by_number("22") #fallan los botones de la cart page
+    electronics.go_to_cart_page()
+    cart.increase_qty()
+    cart.increase_qty()
+    cart.decrease_qty()
+    cart.remove_from_cart()
+    cart.continue_shopping()
+
+
+def test_homepage(driver):
+    homepage = HomePage(driver)
+
+    homepage.load()
+    homepage.go_to_groceries_page_carousel()
