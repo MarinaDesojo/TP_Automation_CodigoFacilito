@@ -1,21 +1,24 @@
-#para que sirve? para contener los metodos genericos que van a estar presentes en todos los page objects
-#desde escribir, a hacer click, obtener un dato, etc, y se puede actualizar desde aca para actualizartodo lode mas
-
+import time
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from utils.config import URLS
 
 class BasePage:
-
     def __init__(self, driver) -> None:
         self.driver = driver
 
     def visit(self, url: str) -> None:
         self.driver.get(url)
+
+    # def visit(self, url:str) -> None:
+    #     self.driver.get(URLS[url])
+
+
 
     # def click(self, locator: tuple[By, str]):
     #     self.driver.find_element(*locator).click()
@@ -23,7 +26,7 @@ class BasePage:
     def click(self, locator: tuple[By, str], timeout=10):
         # Espera hasta que el elemento sea clickeable
         element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)  # ✅ solo un argumento
+            EC.element_to_be_clickable(locator)
         )
         element.click()
 
@@ -85,8 +88,54 @@ class BasePage:
                 EC.visibility_of_element_located(locator)
             )
         except TimeoutException:
-            raise AssertionError(f"El elemento {locator} no apareció dentro de {timeout} segundos.")
+            raise AssertionError(f"The element {locator} did not apper in the span of {timeout} seconds.")
 
+
+
+    def move_pointer(self, locator1: tuple[By, str],xoffset: int, yoffset: int):
+        element = self.driver.find_element(*locator1)
+        ActionChains(self.driver).move_to_element(element).perform()
+        ActionChains(self.driver).move_by_offset(xoffset, yoffset).perform()
+        ActionChains(self.driver).click().perform()
+
+
+    def keyboard_navigation_tab(self, number_of_tabs:int):
+        actions = ActionChains(self.driver)
+        for _ in range(int(number_of_tabs)):
+            actions.send_keys(Keys.TAB)
+            time.sleep(0.1)
+        actions.perform()
+
+        time.sleep(0.5)
+
+    def keyboard_access_element(self):
+        actions = ActionChains(self.driver)
+        actions.send_keys(Keys.ENTER)
+        actions.perform()
+
+        time.sleep(0.5)
+
+    def keyboard_navigation_arrow_down(self):
+        actions = ActionChains(self.driver)
+        actions.send_keys(Keys.ARROW_DOWN)
+        actions.perform()
+
+        time.sleep(0.5)
+
+    def keyboard_navigation_arrow_up(self):
+        actions = ActionChains(self.driver)
+        actions.send_keys(Keys.ARROW_UP)
+        actions.perform()
+
+        time.sleep(0.5)
+
+    def assert_url(self, path:str) -> None:
+        expected_url = URLS[path]
+        WebDriverWait(self.driver, 5).until(
+            EC.url_contains(expected_url)
+        )
+        current_url = self.driver.current_url
+        assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
 
 
     #def assert_inventory_url(self): #en realidad tiene que ir a la web de productos

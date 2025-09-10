@@ -1,18 +1,9 @@
 from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
+from utils.config import URLS
+from utils.config import LOADING_OVERLAY
 
 class CheckoutPage(BasePage):
-    # URL
-    URL = "https://shophub-commerce.vercel.app/checkout"  # mejor practica en un archivo de datos modularizado
-    # Header
-    LINK_HOMEPAGE = (By.CSS_SELECTOR, "a.mr-6.flex.items-center.space-x-2")
-    BUTTON_CATEGORIES = (By.XPATH, '//button[contains(., "Categories")]')
-    INPUT_SEARCH = (By.XPATH, '//input[@placeholder="Search products..."]')
-    LINK_LOGIN = (By.XPATH, '//a[@href="/login"]')
-    LINK_SIGNUP = (By.XPATH, '//a[@href="/signup"]')
-    LINK_CART = (By.XPATH, '//a[@href="/cart"]')
-    # Overlay
-    LOADING_OVERLAY = (By.CSS_SELECTOR, 'div.fixed.inset-0.z-50.flex.items-center.justify-center.bg-background\\/70')
     # Main
     HEADING_CHECKOUT = (By.ID, "checkout-page-title")
     # Main - Customer Information Form
@@ -36,10 +27,10 @@ class CheckoutPage(BasePage):
     TEXT_TOTAL_PRICE = (By.ID, "total-row")
 
     def load(self):
-        self.visit(self.URL)
+        self.driver.get(URLS["checkout"])
 
     def fill_checkout_form(self, first_name: str, last_name: str, email: str, phone_number: str, address: str, city: str, zip_code: str, country: str):
-        self.wait_until_invisible(self.LOADING_OVERLAY)
+        self.wait_until_invisible(LOADING_OVERLAY)
         self.type(self.INPUT_FIRST_NAME, first_name)
         self.type(self.INPUT_LAST_NAME, last_name)
         self.type(self.INPUT_EMAIL, email)

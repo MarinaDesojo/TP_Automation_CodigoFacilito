@@ -1,20 +1,9 @@
 from selenium.webdriver.common.by import By
 from .base_page import BasePage
+from utils.config import URLS
+from utils.config import LOADING_OVERLAY
 
 class LoginPage(BasePage): #como parametro recibe basepage para poder replicar los metodos
-    # URL
-    URL = "https://shophub-commerce.vercel.app/login"  # mejor practica en un archivo de datos modularizado
-    # Header
-    LINK_HOMEPAGE = (By.CSS_SELECTOR, "a.mr-6.flex.items-center.space-x-2")
-    BUTTON_CATEGORIES = (By.XPATH, '//button[contains(., "Categories")]')
-    INPUT_SEARCH = (By.XPATH, '//input[@placeholder="Search products..."]')
-    LINK_LOGIN = (By.XPATH, '//a[@href="/login"]')
-    LINK_SIGNUP = (By.XPATH, '//a[@href="/signup"]')
-    LINK_CART = (By.XPATH, '//a[@href="/cart"]')
-    SUBMENU_CATEGORIES = (By.XPATH, '//div[@data-orientation="horizontal"]//div[contains(@class, "grid")]')
-    LINK_SUBMENU_CATEGORIES = (By.XPATH, '//a[href="/categories/men-clothes" and @data-radix-collection-item]')
-    # Overlay
-    LOADING_OVERLAY = (By.CSS_SELECTOR, 'div.fixed.inset-0.z-50.flex.items-center.justify-center.bg-background\\/70')
     # Main
     HEADING_LOGIN = (By.XPATH, '//div[normalize-space()="Login"]')
     INPUT_EMAIL = (By.ID, "email")
@@ -22,9 +11,10 @@ class LoginPage(BasePage): #como parametro recibe basepage para poder replicar l
     BUTTON_LOGIN = (By.XPATH, '//button[@type="submit" and text()="Login"]')
 
     def load(self):
-        self.visit(self.URL)
+        self.driver.get(URLS["login"])
 
     def fill_login_form(self, email: str, password: str):
+        self.wait_until_invisible(LOADING_OVERLAY)
         self.type(self.INPUT_EMAIL, email)
         self.type(self.INPUT_PASSWORD, password)
         self.click(self.BUTTON_LOGIN)

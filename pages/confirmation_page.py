@@ -1,23 +1,17 @@
 from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
+from utils.config import URLS
+from utils.config import LOADING_OVERLAY
 
 class ConfirmationPage(BasePage):
-    # URL
-    URL = "https://shophub-commerce.vercel.app/confirmation"
-    # Header
-    LINK_HOMEPAGE = (By.CSS_SELECTOR, "a.mr-6.flex.items-center.space-x-2")
-    BUTTON_CATEGORIES = (By.XPATH, '//button[contains(., "Categories")]')
-    INPUT_SEARCH = (By.XPATH, '//input[@placeholder="Search products..."]')
-    LINK_LOGIN = (By.XPATH, '//a[@href="/login"]')
-    LINK_SIGNUP = (By.XPATH, '//a[@href="/signup"]')
-    LINK_CART = (By.XPATH, '//a[@href="/cart"]')
-    # Overlay
-    LOADING_OVERLAY = (By.CSS_SELECTOR, 'div.fixed.inset-0.z-50.flex.items-center.justify-center.bg-background\\/70')
     # Main
     HEADING_NO_ORDER = (By.XPATH, '//h1[normalize-space()="No Order Found"]')
     TEXT_INFORMATION = (By.XPATH, "//p[normalize-space()='We couldn't find your order information.']")
     LINK_RETURN_HOME= (By.XPATH, '//button[text()="Return to Home"]/ancestor::a')
 
+    def load(self):
+        self.driver.get(URLS["confirmation"])
+
     def return_to_home(self):
-        self.wait_until_invisible(self.LOADING_OVERLAY)
+        self.wait_until_invisible(LOADING_OVERLAY)
         self.click(self.LINK_RETURN_HOME)
