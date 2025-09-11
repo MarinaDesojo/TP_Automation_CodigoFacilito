@@ -33,7 +33,7 @@ URLS = {
     "women_clothes": f"{BASE_URL}categories/women-clothes"
 }
 
-# Product details page (PDP) has a dynamic URL
+# Product details page (PDP) has a dynamic URL:
 def get_product_url(product_number: str) -> str:
     return f"{BASE_URL}product/{product_number}"
 

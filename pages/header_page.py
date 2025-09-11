@@ -70,7 +70,7 @@ class HeaderPage(BasePage):
         assert badge == amount, f"Expected cart badge to show {amount} but got {badge}"
 
     def navigate_to_categories_menu(self, xoffset:int, yoffset:int): #no funciona
-        self.wait_until_invisible(LOADING_OVERLAY)
+        # self.wait_until_invisible(LOADING_OVERLAY)
         self.move_pointer(self.BUTTON_CATEGORIES, xoffset, yoffset)
 
     def navigate_to_categories_menu_keyboard(self, arrow_presses: int = 1):

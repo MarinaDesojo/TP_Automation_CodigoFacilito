@@ -38,6 +38,10 @@ class BasePage:
     def text_of_element(self, locator: tuple[By, str]) -> str:
         return self.driver.find_element(*locator).text
 
+    def assert_text_of_element(self, locator: tuple[By, str],expected_text: str):
+        current_text = self.driver.find_element(*locator).text
+        assert current_text == expected_text, f"Expected '{expected_text}', but got '{current_text}'"
+
     def element_is_visible(self, locator: tuple[By, str]) -> bool:
         return self.driver.find_element(*locator).is_displayed()
 
@@ -71,7 +75,7 @@ class BasePage:
     #     except:
     #         return False
 
-    def wait_until_invisible(self, locator, appear_timeout=2, disappear_timeout=10):  # espera a que aparezca y desaparezca el overlay
+    def wait_until_invisible(self, locator, appear_timeout=0.5, disappear_timeout=10):  # espera a que aparezca y desaparezca el overlay
         try:
             WebDriverWait(self.driver, appear_timeout, poll_frequency=0.1).until(
                 EC.presence_of_element_located(locator)
@@ -136,6 +140,19 @@ class BasePage:
         )
         current_url = self.driver.current_url
         assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
+
+
+# probar, es para validar orden de links en el dom
+    def test_order_of_links(driver):
+        link1 = driver.find_element(By.ID, "link1")
+        link2 = driver.find_element(By.ID, "link2")
+
+        # Comparar posiciones en el DOM
+        elements = driver.find_elements(By.TAG_NAME, "a")
+        link_ids_in_order = [el.get_attribute("id") for el in elements]
+
+        assert link_ids_in_order.index("link1") < link_ids_in_order.index("link2"), \
+            "El link1 no está antes que link2 en el DOM"
 
 
     #def assert_inventory_url(self): #en realidad tiene que ir a la web de productos

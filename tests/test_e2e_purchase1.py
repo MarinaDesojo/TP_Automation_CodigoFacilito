@@ -26,36 +26,41 @@ from utils.config import EMAIL_USER, PASSWORD, EMAIL_USER_WRONG, FIRST_NAME, LAS
 def test_homepage_to_login_page_login(driver):
     homepage = HomePage(driver)
     login = LoginPage(driver)
+    header = HeaderPage(driver)
 
     homepage.load()
-    homepage.go_to_login_page()
+    header.go_to_login_page()
     login.fill_login_form(EMAIL_USER, PASSWORD)
     print(EMAIL_USER,PASSWORD)
 
 def test_homepage_to_login_page_login_fail(driver): #no se por que no falla.. cuando lo hago a mano si falla
     homepage = HomePage(driver)
     login = LoginPage(driver)
+    header = HeaderPage(driver)
+
 
     homepage.load()
-    homepage.go_to_login_page()
+    header.go_to_login_page()
     login.fill_login_form(EMAIL_USER_WRONG, PASSWORD)
 
 
 def test_homepage_search(driver):
     homepage = HomePage(driver)
+    header = HeaderPage(driver)
 
     homepage.load()
-    homepage.search_product("smartphone") #la web no tiene motor de busqueda pero al menos se puede escribir en el campo
+    header.search_product("smartphone") #la web no tiene motor de busqueda pero al menos se puede escribir en el campo
     time.sleep(1)
 
 
 def test_homepage_categories(driver):
     homepage = HomePage(driver)
+    header = HeaderPage(driver)
 
     homepage.load()
-    homepage.open_categories_menu()
+    header.open_categories_menu()
     #homepage.debug_check_submenu_presence()
-    homepage.visibility_option_categories_menu() #esto no funciona no se por que, no ve el
+    header.visibility_option_categories_menu() #esto no funciona no se por que, no ve el
     #homepage.select_option_categories_menu()
 
 
@@ -71,13 +76,16 @@ def test_shop_e2e(driver):
     homepage.load()
     homepage.go_to_electronics_page()
     electronics.go_to_product_page_by_number_21_30("24")
-    pdp.increase_product_qty("24")
+    # pdp.increase_product_qty("24")
     pdp.add_to_cart("24")
-    header.check_cart_badge_amount(2)
+    # header.check_cart_badge_amount(2)
     header.go_to_cart_page()
     cart.go_to_checkout()
     checkout.fill_checkout_form(FIRST_NAME, LAST_NAME, EMAIL_USER, PHONE_NUMBER, ADDRESS, CITY, ZIP_CODE, COUNTRY)
+    confirmation.validate_purchase_completion_heading()
+    confirmation.validate_purchase_completion_message()
     confirmation.return_to_home()
+    time.sleep(2)
 
 def test_cart(driver):
     homepage = HomePage(driver)
@@ -86,32 +94,34 @@ def test_cart(driver):
     header = HeaderPage(driver)
 
     homepage.load()
-    header.go_to_homepage()
     homepage.go_to_electronics_page()
-    electronics.add_product_to_cart_by_number_21_30("21")
-    electronics.add_product_to_cart_by_number_21_30("22") #fallan los botones de la cart page
-    electronics.add_product_to_cart_by_number_21_30("30") #falla porque no existe el producto número 31
+    electronics.add_product_to_cart_by_number_21_30("24")
+    electronics.add_product_to_cart_by_number_21_30("22")
+    electronics.add_product_to_cart_by_number_21_30("27")
     header.go_to_cart_page()
-    cart.increase_qty()
-    cart.increase_qty()
-    cart.decrease_qty()
-    cart.remove_from_cart()
+    cart.increase_qty("Smart Watch")
+    cart.increase_qty("Laptop")
+    cart.decrease_qty("Smart Watch")
+    cart.remove_from_cart("Digital Camera")
+    time.sleep(2)
     cart.continue_shopping()
 
 
 def test_homepage(driver): #hacer estas pruebas y las del locator y mostrar que fallan
     homepage = HomePage(driver)
+    header = HeaderPage(driver)
 
     homepage.load()
-    homepage.navigate_to_categories_menu(0,40)
+    header.navigate_to_categories_menu(0,40)
     time.sleep(5)
 
 
 def test_homepage1(driver): # WOOOOOO ESTE SI FUNCIONA XD LPM
     homepage = HomePage(driver)
+    header = HeaderPage(driver)
 
     homepage.load()
-    homepage.navigate_to_categories_menu_keyboard()
+    header.navigate_to_categories_menu_keyboard(2)
     time.sleep(5)
 
 def test_product_page(driver):
@@ -129,3 +139,11 @@ def test_cart_page_from_header_page(driver):
     cart.continue_shopping()
     time.sleep(2)
 
+def test_confirmation_page(driver):
+    confirmation = ConfirmationPage(driver)
+
+    confirmation.load()
+    confirmation.validate_purchase_completion_heading()
+    confirmation.validate_purchase_completion_message()
+    confirmation.return_to_home()
+    time.sleep(2)

@@ -1,11 +1,7 @@
 import pytest
-
-
 from utils.driver_factory import create_driver
 import os
 from datetime import datetime
-
-
 
 def pytest_addoption(parser):
     parser.addoption(
