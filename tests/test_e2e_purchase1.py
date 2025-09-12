@@ -15,35 +15,82 @@ from pages.product_detail_page import ProductPage
 from pages.signup_page import SignUpPage
 from pages.specialdeals_page import SpecialDealsPage
 from pages.womenclothes_page import WomenClothesPage
-
 from tests.conftest import driver
-
-from utils.config import EMAIL_USER, PASSWORD, EMAIL_USER_WRONG, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
-
+from utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY, EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_NO_DOT_COM
 
 @pytest.mark.login
 @pytest.mark.happypath
-def test_homepage_to_login_page_login(driver):
-    homepage = HomePage(driver)
+def test_login_page_success(driver):
     login = LoginPage(driver)
-    header = HeaderPage(driver)
 
-    homepage.load()
-    header.go_to_login_page()
-    login.fill_login_form(EMAIL_USER, PASSWORD)
-    print(EMAIL_USER,PASSWORD)
+    login.load()
+    login.fill_login_form_success(EMAIL_USER, PASSWORD)
+    login.verify_logged_in_text()
+    login.go_to_home()
 
-def test_homepage_to_login_page_login_fail(driver): #no se por que no falla.. cuando lo hago a mano si falla
-    homepage = HomePage(driver)
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_empty_fields(driver):
     login = LoginPage(driver)
-    header = HeaderPage(driver)
+
+    login.load()
+    login.empty_login_form()
+
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_wrong_email(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_NO_AT, PASSWORD)
+
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_empty_fields(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_NO_TEXT_POST_AT, PASSWORD)
+
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_empty_fields(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_NO_TEXT_PRE_AT, PASSWORD)
+
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_empty_fields(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_ONLY_AT, PASSWORD)
+
+@pytest.mark.login
+@pytest.mark.fail
+def test_login_page_empty_fields(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_NO_DOT_COM, PASSWORD)
 
 
-    homepage.load()
-    header.go_to_login_page()
-    login.fill_login_form(EMAIL_USER_WRONG, PASSWORD)
 
 
+
+
+
+
+
+
+
+
+
+
+
+@pytest.mark.search
 def test_homepage_search(driver):
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -52,7 +99,7 @@ def test_homepage_search(driver):
     header.search_product("smartphone") #la web no tiene motor de busqueda pero al menos se puede escribir en el campo
     time.sleep(1)
 
-
+@pytest.mark.navigation
 def test_homepage_categories(driver):
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -63,7 +110,8 @@ def test_homepage_categories(driver):
     header.visibility_option_categories_menu() #esto no funciona no se por que, no ve el
     #homepage.select_option_categories_menu()
 
-
+@pytest.mark.e2e
+@pytest.mark.shop
 def test_shop_e2e(driver):
     homepage = HomePage(driver)
     electronics = ElectronicsPage(driver)
@@ -87,6 +135,7 @@ def test_shop_e2e(driver):
     confirmation.return_to_home()
     time.sleep(2)
 
+@pytest.mark.shop
 def test_cart(driver):
     homepage = HomePage(driver)
     cart = CartPage(driver)
@@ -106,7 +155,7 @@ def test_cart(driver):
     time.sleep(2)
     cart.continue_shopping()
 
-
+@pytest.mark.navigation
 def test_homepage(driver): #hacer estas pruebas y las del locator y mostrar que fallan
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -115,7 +164,7 @@ def test_homepage(driver): #hacer estas pruebas y las del locator y mostrar que 
     header.navigate_to_categories_menu(0,40)
     time.sleep(5)
 
-
+@pytest.mark.navigation
 def test_homepage1(driver): # WOOOOOO ESTE SI FUNCIONA XD LPM
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -124,12 +173,14 @@ def test_homepage1(driver): # WOOOOOO ESTE SI FUNCIONA XD LPM
     header.navigate_to_categories_menu_keyboard(2)
     time.sleep(5)
 
+@pytest.mark.content_verification
 def test_product_page(driver):
     pdp = ProductPage(driver)
 
     pdp.load("30")
     time.sleep(2)
 
+@pytest.mark.navigation
 def test_cart_page_from_header_page(driver):
     header = HeaderPage(driver)
     cart = CartPage(driver)
@@ -139,6 +190,7 @@ def test_cart_page_from_header_page(driver):
     cart.continue_shopping()
     time.sleep(2)
 
+@pytest.mark.content_verification
 def test_confirmation_page(driver):
     confirmation = ConfirmationPage(driver)
 
@@ -147,3 +199,22 @@ def test_confirmation_page(driver):
     confirmation.validate_purchase_completion_message()
     confirmation.return_to_home()
     time.sleep(2)
+
+@pytest.mark.content_verification
+def test_plp_order(driver):
+    homepage = HomePage(driver)
+    books = BooksPage(driver)
+
+    homepage.load()
+    homepage.go_to_books_page()
+    books.test_product_card_action_elements_order_in_dom()
+    time.sleep(1)
+    books.test_visual_order_of_product_actions()
+
+@pytest.mark.content_verification
+def test_empty_cart(driver):
+    cart = CartPage(driver)
+
+    cart.load()
+    cart.cart_empty_verification()
+    cart.verify_cart_empty_text()

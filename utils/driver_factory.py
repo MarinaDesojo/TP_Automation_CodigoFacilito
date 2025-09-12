@@ -4,7 +4,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 def create_driver(headless=False): #headless significa q no tiene interfaz, booleano
     options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")  # Abrimos el navegador maximizado
     options.add_argument('--incognito')  # con esto abre una ventana de incognito
+
 
     if headless:
         options.add_argument("--headless=new")

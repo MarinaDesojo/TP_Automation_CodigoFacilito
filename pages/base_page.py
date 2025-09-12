@@ -7,6 +7,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from utils.config import URLS
+from selenium.common.exceptions import NoSuchElementException
+
 
 class BasePage:
     def __init__(self, driver) -> None:
@@ -24,22 +26,23 @@ class BasePage:
     #     self.driver.find_element(*locator).click()
 
     def click(self, locator: tuple[By, str], timeout=10):
-        # Espera hasta que el elemento sea clickeable
         element = WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable(locator)
         )
         element.click()
 
     def type(self, locator: tuple[By, str], text: str):
+        print(f"[DEBUG] locator recibido: {locator}")
         element = self.driver.find_element(*locator)
         element.clear()
-        self.driver.find_element(*locator).send_keys(text)
+        element.send_keys(text)
 
     def text_of_element(self, locator: tuple[By, str]) -> str:
         return self.driver.find_element(*locator).text
 
-    def assert_text_of_element(self, locator: tuple[By, str],expected_text: str):
-        current_text = self.driver.find_element(*locator).text
+    def assert_text_of_element(self, locator, expected_text: str):
+        element = self.driver.find_element(*locator)
+        current_text = element.text.strip()
         assert current_text == expected_text, f"Expected '{expected_text}', but got '{current_text}'"
 
     def element_is_visible(self, locator: tuple[By, str]) -> bool:
@@ -133,14 +136,35 @@ class BasePage:
 
         time.sleep(0.5)
 
-    def assert_url(self, path:str) -> None:
-        expected_url = URLS[path]
-        WebDriverWait(self.driver, 5).until(
-            EC.url_contains(expected_url)
-        )
-        current_url = self.driver.current_url
-        assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
+    # def assert_url(self, path:str) -> None:
+    #     expected_url = URLS[path]
+    #     WebDriverWait(self.driver, 5).until(
+    #         EC.url_contains(expected_url)
+    #     )
+    #     current_url = self.driver.current_url
+    #     assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
 
+    def assert_url(self, path: str) -> None:
+        expected_url = URLS[path]
+        try:
+            WebDriverWait(self.driver, 3, poll_frequency=0.1).until(EC.url_contains(expected_url))
+            current_url = self.driver.current_url
+            assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
+        except TimeoutException:
+            current_url = self.driver.current_url
+            raise AssertionError(f"Timeout waiting for URL to contain '{expected_url}'. Current URL: '{current_url}'")
+
+    def assert_url_negative(self, path: str) -> None:
+        def assert_url_negative(self, path: str, timeout: int = 2) -> None:
+            expected_url = URLS[path]
+            try:
+                WebDriverWait(self.driver, timeout).until(EC.url_contains(expected_url))
+                raise AssertionError(f"Did NOT expect to go to'{expected_url}', but URL changed.")
+            except TimeoutException:
+                current_url = self.driver.current_url
+                assert expected_url not in current_url, (
+                    f"Expected URL not to contain '{expected_url}', but it contained '{current_url}'"
+                )
 
 # probar, es para validar orden de links en el dom
     def test_order_of_links(driver):
@@ -157,3 +181,31 @@ class BasePage:
 
     #def assert_inventory_url(self): #en realidad tiene que ir a la web de productos
     #    assert "inventory" in driver.current_url, "No te encuentras en URL /inventory" #valida que la palabra inventory esta en la URL
+
+    def is_element_not_in_dom(self, locator):
+        try:
+            self.driver.find_element(*locator)
+            return False
+        except NoSuchElementException:
+            return True
+
+    def is_element_present(self, locator):
+        try:
+            self.driver.find_element(*locator)
+            return True
+        except NoSuchElementException:
+            return False
+
+    def verify_element_removed_and_empty_state_displayed(self, removed_locator, expected_locator):
+        # Verificar que el elemento fue removido del DOM
+        try:
+            self.driver.find_element(*removed_locator)
+            assert False, f"Expected element {removed_locator} to not be present in dom, but it was found."
+        except NoSuchElementException:
+            pass  # Correcto, no está en el DOM
+
+        # Verificar que el texto (u otro elemento) sí esté presente
+        try:
+            self.driver.find_element(*expected_locator)
+        except NoSuchElementException:
+            assert False, f"Expected element {expected_locator} to be present in dom, but it wasn't found."

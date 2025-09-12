@@ -25,7 +25,7 @@ class CartPage(BasePage):
     LINK_CHECKOUT = (By.XPATH, '//a[@href="/checkout"]')
     LINK_CONTINUE_SHOPPING = (By.XPATH, '//a[@href="/" and .//button[normalize-space(text())="Continue Shopping"]]')
     # Empty cart
-    HEADING_EMPTY_CART = (By.XPATH, '//h1[normalize-space()="Your Cart is Empty"]')
+    HEADING_EMPTY_CART = (By.TAG_NAME, "h1")
     TEXT_EMPTY_CART = (By.CLASS_NAME, "mb-8")
 
     # Content
@@ -70,3 +70,12 @@ class CartPage(BasePage):
         self.click(self.LINK_CONTINUE_SHOPPING)
         self.assert_url("homepage")
         self.wait_until_invisible(LOADING_OVERLAY)
+
+    def cart_empty_verification(self):
+        self.verify_element_removed_and_empty_state_displayed(
+        removed_locator = self.SVG_REMOVE,
+        expected_locator = self.HEADING_EMPTY_CART)
+
+    def verify_cart_empty_text(self):
+        self.assert_text_of_element(locator=self.HEADING_EMPTY_CART, expected_text=self.HEADING_EMPTY)
+

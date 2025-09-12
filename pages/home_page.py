@@ -31,33 +31,35 @@ class HomePage(BasePage):
     def load(self):
         self.driver.get(URLS["homepage"])
 
-    # def load_visit(self, url:str):
-    #     self.visit(url)
-
     def go_to_electronics_page(self):
-        self.wait_until_invisible(LOADING_OVERLAY)
         self.click(self.LINK_CATEGORY_ELECTRONICS)
+        self.assert_url("electronics")
+        self.wait_until_invisible(LOADING_OVERLAY)
+
+    def go_to_books_page(self):
+        self.click(self.LINK_CATEGORY_BOOKS)
+        self.assert_url("books")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def go_to_special_deals_page(self):
-        self.wait_until_invisible(LOADING_OVERLAY)
         self.click(self.LINK_VIEW_ALL_DEALS)
+        self.assert_url("special_deals")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def rotate_carousel_left(self):
-        self.wait_until_invisible(LOADING_OVERLAY)
         svg_icon = self.driver.find_element(*self.BUTTON_CAROUSEL_LEFT)
         button = svg_icon.find_element(By.XPATH, './ancestor::button')
         button.click()
 
     def rotate_carousel_right(self):
-        self.wait_until_invisible(LOADING_OVERLAY)
         svg_icon = self.driver.find_element(*self.BUTTON_CAROUSEL_RIGHT)
         button = svg_icon.find_element(By.XPATH, './ancestor::button')
         button.click()
 
     def go_to_groceries_page_carousel(self):
-        self.wait_until_invisible(LOADING_OVERLAY)
         self.wait_until_visible(self.LINK_ORDER_NOW_GROCERIES)
         self.click(self.LINK_ORDER_NOW_GROCERIES)
-
+        self.assert_url("groceries")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
 
