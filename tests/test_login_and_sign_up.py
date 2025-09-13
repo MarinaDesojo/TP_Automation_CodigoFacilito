@@ -2,6 +2,8 @@ import pytest
 #page objects
 from pages.login_page import LoginPage
 from pages.signup_page import SignUpPage
+from pages.home_page import HomePage
+from pages.header_page import HeaderPage
 from tests.conftest import driver
 from utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
 from utils.config import EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_DOUBLE_AT, EMAIL_SPECIAL_CH_1, EMAIL_SPECIAL_CH_2, EMAIL_SPECIAL_CH_3, EMAIL_SPECIAL_CH_4, EMAIL_SPECIAL_CH_5, EMAIL_SPECIAL_CH_6, EMAIL_SPECIAL_CH_7
@@ -14,9 +16,22 @@ def test_login_success(driver):
     login.load()
     login.fill_login_form_success(EMAIL_USER, PASSWORD)
     login.verify_logged_in_text()
-    login.go_to_home()
 # Usually on the login page I would test registered emails and passwords, but on this website that is not the case, so the approach is a little different
 # Usually there would be no need to test valid emails on the login page, only on the sign up page, because the user would not have been able to register it on the first place
+
+@pytest.mark.e2e
+@pytest.mark.login
+@pytest.mark.happypath
+def test_login_success_e2e(driver):
+    homepage = HomePage(driver)
+    header = HeaderPage(driver)
+    login = LoginPage(driver)
+
+    homepage.load()
+    header.go_to_login_page()
+    login.fill_login_form_success(EMAIL_USER, PASSWORD)
+    login.verify_logged_in_text()
+    login.go_to_home()
 
 @pytest.mark.login
 @pytest.mark.fail
@@ -130,6 +145,8 @@ def test_sign_up_success(driver):
 
     signup.load()
     signup.fill_sign_up_form_success(FIRST_NAME, LAST_NAME, EMAIL_USER, ZIP_CODE, PASSWORD)
+    signup.verify_signed_up_text()
+    signup.go_to_home()
 
 def test_sign_up_email_and_space_fields_success(driver):
     signup = SignUpPage(driver)
@@ -138,6 +155,20 @@ def test_sign_up_email_and_space_fields_success(driver):
     signup.fill_sign_up_form_success(" ", " ", EMAIL_USER, " ", " ")
 # Email input field is the only one with conditions to meet, set by the browser, same as login
 # There are no restrictions or conditions to meet on the other fields
+
+@pytest.mark.e2e
+@pytest.mark.login
+@pytest.mark.happypath
+def test_sign_up_success_e2e(driver):
+    homepage = HomePage(driver)
+    header = HeaderPage(driver)
+    signup = SignUpPage(driver)
+
+    homepage.load()
+    header.go_to_signup_page()
+    signup.fill_sign_up_form_success(FIRST_NAME, LAST_NAME, EMAIL_USER, ZIP_CODE, PASSWORD)
+    signup.verify_signed_up_text()
+    signup.go_to_home()
 
 @pytest.mark.sign_up
 @pytest.mark.fail

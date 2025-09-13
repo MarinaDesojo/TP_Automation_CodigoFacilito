@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from .base_page import BasePage
 from utils.config import URLS
@@ -43,7 +45,7 @@ class SignUpPage(BasePage): #como parametro recibe basepage para poder replicar 
         self.click(self.BUTTON_SIGNUP)
         self.assert_url_negative("signed_up")
 
-    def verify_logged_in_text(self):
+    def verify_signed_up_text(self):
         self.assert_text_of_element(locator=self.HEADING_SIGNED_UP, expected_text=self.HEADING_SIGNED_UP_TEXT)
 
     def go_to_home(self):
