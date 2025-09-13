@@ -28,9 +28,10 @@ class CheckoutPage(BasePage):
 
     def load(self):
         self.driver.get(URLS["checkout"])
+        self.assert_url("checkout")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def fill_checkout_form(self, first_name: str, last_name: str, email: str, phone_number: str, address: str, city: str, zip_code: str, country: str):
-        self.wait_until_invisible(LOADING_OVERLAY)
         self.type(self.INPUT_FIRST_NAME, first_name)
         self.type(self.INPUT_LAST_NAME, last_name)
         self.type(self.INPUT_EMAIL, email)
@@ -40,3 +41,4 @@ class CheckoutPage(BasePage):
         self.type(self.INPUT_ZIP_CODE, zip_code)
         self.type(self.INPUT_COUNTRY, country)
         self.click(self.LINK_PLACE_ORDER)
+        self.wait_until_invisible(LOADING_OVERLAY)

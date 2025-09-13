@@ -1,5 +1,4 @@
 import time
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
@@ -17,19 +16,14 @@ class BasePage:
     def visit(self, url: str) -> None:
         self.driver.get(url)
 
-    # def visit(self, url:str) -> None:
-    #     self.driver.get(URLS[url])
-
-
-
-    # def click(self, locator: tuple[By, str]):
-    #     self.driver.find_element(*locator).click()
-
     def click(self, locator: tuple[By, str], timeout=10):
-        element = WebDriverWait(self.driver, timeout).until(
-            EC.element_to_be_clickable(locator)
-        )
-        element.click()
+        try:
+            element = WebDriverWait(self.driver, timeout).until(
+                EC.element_to_be_clickable(locator)
+            )
+            element.click()
+        except TimeoutException:
+            raise AssertionError(f"The element {locator} was not found to be clickable after {timeout} seconds.")
 
     def type(self, locator: tuple[By, str], text: str):
         element = self.driver.find_element(*locator)
@@ -47,35 +41,9 @@ class BasePage:
     def element_is_visible(self, locator: tuple[By, str]) -> bool:
         return self.driver.find_element(*locator).is_displayed()
 
-
-    # def element_is_clickable(self, locator: tuple[By, str], timeout=10) -> bool:
-    #     try:
-    #         WebDriverWait(self.driver, timeout).until(
-    #             EC.element_to_be_clickable(*locator)
-    #         )
-    #         return True
-    #     except:
-    #         return False
-
-
     def hover(self, locator: tuple[By, str]):
         element = self.driver.find_element(*locator)
         ActionChains(self.driver).move_to_element(element).perform()
-
-    # def element_is_visible(self, locator, timeout=5):
-    #     #print(f"Esperando visibilidad de: {locator}")
-    #     return WebDriverWait(self.driver, timeout).until(
-    #         EC.visibility_of_element_located(locator)
-    #     )
-
-    # def wait_until_invisible(self, locator, timeout=10) -> bool:
-    #     try:
-    #         WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
-    #             EC.invisibility_of_element_located(locator)
-    #         )
-    #         return True
-    #     except:
-    #         return False
 
     def wait_until_invisible(self, locator, appear_timeout=0.5, disappear_timeout=10):  # espera a que aparezca y desaparezca el overlay
         try:
@@ -88,22 +56,33 @@ class BasePage:
         except TimeoutException:
             pass
 
-    def wait_until_visible(self, locator, timeout=5): # espera a que aparezca un elemento
+    def wait_until_visible(self, locator, timeout=10):
         try:
-            WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
+            element = WebDriverWait(self.driver, timeout, poll_frequency=0.1).until(
                 EC.visibility_of_element_located(locator)
             )
+
+            # Make sure it's on viewport
+            is_in_viewport = self.driver.execute_script("""
+                const elem = arguments[0];
+                const rect = elem.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+                    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+                );
+            """, element)
+
+            if not is_in_viewport:
+                # Scroll to the element
+                self.driver.execute_script("arguments[0].scrollIntoView({ behavior: 'instant', block: 'center' });",
+                                           element)
+
+            return element
+
         except TimeoutException:
-            raise AssertionError(f"The element {locator} did not apper in the span of {timeout} seconds.")
-
-
-
-    def move_pointer(self, locator1: tuple[By, str],xoffset: int, yoffset: int):
-        element = self.driver.find_element(*locator1)
-        ActionChains(self.driver).move_to_element(element).perform()
-        ActionChains(self.driver).move_by_offset(xoffset, yoffset).perform()
-        ActionChains(self.driver).click().perform()
-
+            raise AssertionError(f"The element {locator} did not appear in the span of {timeout} seconds.")
 
     def keyboard_navigation_tab(self, number_of_tabs:int):
         actions = ActionChains(self.driver)
@@ -135,50 +114,24 @@ class BasePage:
 
         time.sleep(0.5)
 
-    # def assert_url(self, path:str) -> None:
-    #     expected_url = URLS[path]
-    #     WebDriverWait(self.driver, 5).until(
-    #         EC.url_contains(expected_url)
-    #     )
-    #     current_url = self.driver.current_url
-    #     assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
-
     def assert_url(self, path: str) -> None:
         expected_url = URLS[path]
         try:
-            WebDriverWait(self.driver, 3, poll_frequency=0.1).until(EC.url_contains(expected_url))
-            current_url = self.driver.current_url
-            assert current_url == expected_url, f"Expected {expected_url} but got {current_url}"
+            WebDriverWait(self.driver, timeout=6, poll_frequency=0.1).until(EC.url_to_be(expected_url))
         except TimeoutException:
             current_url = self.driver.current_url
-            raise AssertionError(f"Timeout waiting for URL to contain '{expected_url}'. Current URL: '{current_url}'")
+            raise AssertionError(f"Timeout waiting for exact URL '{expected_url}'. Current URL: '{current_url}'")
 
     def assert_url_negative(self, path: str) -> None:
         expected_url = URLS[path]
         try:
-            WebDriverWait(self.driver, timeout=2).until(EC.url_contains(expected_url))
+            WebDriverWait(self.driver, timeout=5).until(EC.url_contains(expected_url))
             raise AssertionError(f"Did NOT expect to go to'{expected_url}', but URL changed.")
         except TimeoutException:
             current_url = self.driver.current_url
             assert expected_url not in current_url, (
                 f"Expected URL not to contain '{expected_url}', but it contained '{current_url}'"
             )
-
-# probar, es para validar orden de links en el dom
-    def test_order_of_links(driver):
-        link1 = driver.find_element(By.ID, "link1")
-        link2 = driver.find_element(By.ID, "link2")
-
-        # Comparar posiciones en el DOM
-        elements = driver.find_elements(By.TAG_NAME, "a")
-        link_ids_in_order = [el.get_attribute("id") for el in elements]
-
-        assert link_ids_in_order.index("link1") < link_ids_in_order.index("link2"), \
-            "El link1 no está antes que link2 en el DOM"
-
-
-    #def assert_inventory_url(self): #en realidad tiene que ir a la web de productos
-    #    assert "inventory" in driver.current_url, "No te encuentras en URL /inventory" #valida que la palabra inventory esta en la URL
 
     def is_element_not_in_dom(self, locator):
         try:
@@ -195,14 +148,14 @@ class BasePage:
             return False
 
     def verify_element_removed_and_empty_state_displayed(self, removed_locator, expected_locator):
-        # Verificar que el elemento fue removido del DOM
+        # Verifies that element was removed from DOM
         try:
             self.driver.find_element(*removed_locator)
             assert False, f"Expected element {removed_locator} to not be present in dom, but it was found."
         except NoSuchElementException:
-            pass  # Correcto, no está en el DOM
+            pass
 
-        # Verificar que el texto (u otro elemento) sí esté presente
+        # Verifies that text or another element IS present in DOM
         try:
             self.driver.find_element(*expected_locator)
         except NoSuchElementException:

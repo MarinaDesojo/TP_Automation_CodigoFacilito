@@ -21,6 +21,8 @@ class SignUpPage(BasePage): #como parametro recibe basepage para poder replicar 
 
     def load(self):
         self.driver.get(URLS["signup"])
+        self.assert_url("signup")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def fill_sign_up_form_success(self, first_name: str, last_name: str, email: str, zip_code: str, password: str):
         self.type(self.INPUT_FIRST_NAME, first_name)

@@ -2,34 +2,101 @@ from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
 from utils.config import URLS
 from utils.config import LOADING_OVERLAY
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import os
 
 class WomenClothesPage(BasePage):
+    # Header
+    TEXT_CART_BADGE = (By.CSS_SELECTOR, 'a[href="/cart"] button > div.rounded-full.absolute')
     # Main
     HEADING_CATEGORY_TITLE = (By.ID, "category-title")
     TEXT_CATEGORY_DESCRIPTION = (By.ID, "category-description")
 
     def load(self):
         self.driver.get(URLS["women_clothes"])
-
-    def go_to_cart_page(self):
+        self.assert_url("women_clothes")
         self.wait_until_invisible(LOADING_OVERLAY)
-        self.click(self.LINK_CART)
 
     def go_to_product_page_by_number_11_20(self, product_number: str):
-        self.wait_until_invisible(LOADING_OVERLAY)
         if not product_number.isdigit() or not (11 <= int(product_number) <= 20):
             raise ValueError("product_number has to be between '11' and '20'")
         product_detail_link = (By.CSS_SELECTOR, f'[href="/product/{product_number}"]')
         self.click(product_detail_link)
 
+    def verify_all_view_details_links_by_number_11_20(self):
+        errors = []
+
+        for product_number in range(11, 21):
+            product_id = str(product_number)
+
+            try:
+                name_locator = (By.ID, f"product-name-{product_id}")
+                product_name = self.text_of_element(name_locator).strip()
+
+                view_details_link = (By.ID, f"view-details-{product_id}")
+                self.click(view_details_link)
+
+                expected_url_suffix = f"/product/{product_id}"
+                WebDriverWait(self.driver, 5).until(EC.url_contains(expected_url_suffix))
+                current_url = self.driver.current_url
+
+                if not current_url.endswith(expected_url_suffix):
+                    errors.append(
+                        f" Product number {product_id} ('{product_name}'): "
+                        f"Wrong URL. Expected: '{expected_url_suffix}', Current: '{current_url}'"
+                    )
+
+            except Exception as e:
+                name = locals().get("product_name", "Unknown")
+                errors.append(f"Product number {product_id} ('{name}'): {e}")
+
+            finally:
+                self.driver.get(URLS["women_clothes"])
+                self.assert_url("women_clothes")
+                self.wait_until_invisible(LOADING_OVERLAY)
+
+        if errors:
+            raise AssertionError(
+                "\nErrors were found when verifying 'View Details' links:\n" + "\n".join(errors)
+            )
+
     def add_product_to_cart_by_number_11_20(self, product_number: str):
-        self.wait_until_invisible(LOADING_OVERLAY)
         if not product_number.isdigit() or not (11 <= int(product_number) <= 20):
             raise ValueError("product_number has to be between '11' and '20'")
         add_button = (By.ID, f"add-to-cart-{product_number}")
         self.click(add_button)
+
+    def add_products_11_to_20_to_cart(self):
+        errors = []
+        cart_expected = 0
+
+        for product_number in range(11, 21):
+            cart_expected += 1
+            try:
+                product_id_str = str(product_number)
+                name_locator = (By.ID, f"product-name-{product_id_str}")
+                product_name = self.text_of_element(name_locator).strip()
+
+                self.add_product_to_cart_by_number_11_20(product_id_str)
+
+                current_badge = int(self.text_of_element(self.TEXT_CART_BADGE))
+                if current_badge != cart_expected:
+                    errors.append(
+                        f"Product {product_number} ('{product_name}'): "
+                        f"Expected cart badge to show {cart_expected}, but got {current_badge}"
+                    )
+                    cart_expected = current_badge
+
+            except Exception as e:
+                name = product_name if 'product_name' in locals() else 'Unknown'
+                errors.append(f"Product {product_number} ('{name}'): {e}")
+
+        if errors:
+            raise AssertionError(
+                f"\nErrors were found while adding products to the cart:\n" + "\n".join(errors)
+            )
 
     def get_product_action_elements_container(self):
         return self.driver.find_elements(By.CLASS_NAME, "product-actions")

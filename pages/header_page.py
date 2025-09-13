@@ -13,16 +13,41 @@ class HeaderPage(BasePage):
     LINK_CART = (By.XPATH, '//a[@href="/cart"]')
     TEXT_CART_BADGE = (By.CSS_SELECTOR, 'a[href="/cart"] button > div.rounded-full.absolute')
     SUBMENU_CATEGORIES = (By.XPATH, '//div[@data-orientation="horizontal"]//div[contains(@class, "grid")]')
-    LINK_SUBMENU_CATEGORIES = (By.XPATH, '//a[href="/categories/men-clothes" and @data-radix-collection-item]')
+    LINK_SUBMENU_CATEGORIES_MEN_CLOTHES = (By.XPATH, '//a[href="/categories/men-clothes" and @data-radix-collection-item]')
 
     def load(self):
         self.driver.get(URLS["homepage"])
         self.assert_url("homepage")
 
-    def go_to_cart_page(self):
-        self.click(self.LINK_CART)
-        self.assert_url("cart")
+    def go_to_homepage(self):
+        self.click(self.LINK_HOMEPAGE)
+        self.assert_url("homepage")
         self.wait_until_invisible(LOADING_OVERLAY)
+
+    def open_categories_menu_hover(self):
+        self.hover(self.BUTTON_CATEGORIES)
+
+    def open_categories_menu_click(self):
+        self.click(self.BUTTON_CATEGORIES)
+
+    def visibility_option_categories_menu(self, is_visible=None):
+        self.element_is_visible(self.SUBMENU_CATEGORIES)
+        print(f"SUBMENU_CATEGORIES visible? {bool(is_visible)}")
+
+    def go_to_men_clothes_categories_menu(self):
+        self.click(self.LINK_SUBMENU_CATEGORIES_MEN_CLOTHES)
+
+    def navigate_to_categories_menu_keyboard(self, path, arrow_presses: int = 1):
+        self.keyboard_navigation_tab(2)
+        self.keyboard_access_element()
+        for _ in range(int(arrow_presses)):
+            self.keyboard_navigation_arrow_down()
+        self.keyboard_access_element()
+        self.assert_url(path)
+        self.wait_until_invisible(LOADING_OVERLAY)
+
+    def search_product(self, search):
+        self.type(self.INPUT_SEARCH, search)
 
     def go_to_login_page(self):
         self.click(self.LINK_LOGIN)
@@ -34,48 +59,11 @@ class HeaderPage(BasePage):
         self.assert_url("signup")
         self.wait_until_invisible(LOADING_OVERLAY)
 
-    def search_product(self, search):
-        self.type(self.INPUT_SEARCH, search)
-
-    def open_categories_menu(self):
-        self.hover(self.BUTTON_CATEGORIES)
-
-    def visibility_option_categories_menu(self, is_visible=None): #no es visible nunca, falla
-        self.element_is_visible(self.SUBMENU_CATEGORIES)
-        print(f"SUBMENU_CATEGORIES visible? {bool(is_visible)}")
-
-    # def select_option_categories_menu(self, is_clickable=None):
-    #     self.element_is_clickable(self.LINK_SUBMENU_CATEGORIES)
-    #     print(f"LINK_SUBMENU_CATEGORIES clickable? {bool(is_clickable)}")
-    #     #self.click(self.LINK_SUBMENU_CATEGORIES)
-
-    # def visibility_option_categories_menu(self):
-    #     try:
-    #         self.element_is_visible(self.LINK_SUBMENU_CATEGORIES, timeout=5)
-    #         print("✅ Link 'Men's Clothes' visible")
-    #     except Exception as e:
-    #         print("❌ Link 'Men's Clothes' NO visible:", e)
-    #
-    # def debug_check_submenu_presence(self):
-    #     elements = self.driver.find_elements(*self.SUBMENU_CATEGORIES)
-    #     print(f"¿Elemento SUBMENU_CATEGORIES está en el DOM? {'Sí' if elements else 'No'}")
-
-    def go_to_homepage(self):
-        self.click(self.LINK_HOMEPAGE)
-        self.assert_url("homepage")
+    def go_to_cart_page(self):
+        self.click(self.LINK_CART)
+        self.assert_url("cart")
         self.wait_until_invisible(LOADING_OVERLAY)
 
     def check_cart_badge_amount(self, amount: int):
         badge = int(self.text_of_element(self.TEXT_CART_BADGE))
         assert badge == amount, f"Expected cart badge to show {amount} but got {badge}"
-
-    def navigate_to_categories_menu(self, xoffset:int, yoffset:int): #no funciona
-        # self.wait_until_invisible(LOADING_OVERLAY)
-        self.move_pointer(self.BUTTON_CATEGORIES, xoffset, yoffset)
-
-    def navigate_to_categories_menu_keyboard(self, arrow_presses: int = 1):
-        self.keyboard_navigation_tab(2)
-        self.keyboard_access_element()
-        for _ in range(int(arrow_presses)):
-            self.keyboard_navigation_arrow_down()
-        self.keyboard_access_element()

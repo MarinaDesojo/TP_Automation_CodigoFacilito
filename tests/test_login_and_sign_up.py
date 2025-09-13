@@ -135,9 +135,6 @@ def test_login_wrong_email_12(driver):
 # Fails, bug detected
 
 
-
-
-
 @pytest.mark.sign_up
 @pytest.mark.happypath
 def test_sign_up_success(driver):
