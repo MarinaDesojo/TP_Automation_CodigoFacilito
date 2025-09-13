@@ -24,6 +24,7 @@ class ElectronicsPage(BasePage):
             raise ValueError("product_number has to be between '21' and '30'")
         product_detail_link = (By.CSS_SELECTOR, f'[href="/product/{product_number}"]')
         self.click(product_detail_link)
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def verify_all_view_details_links_by_number_21_30(self):
         errors = []

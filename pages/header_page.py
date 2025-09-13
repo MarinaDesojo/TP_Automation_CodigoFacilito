@@ -18,6 +18,7 @@ class HeaderPage(BasePage):
     def load(self):
         self.driver.get(URLS["homepage"])
         self.assert_url("homepage")
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def go_to_homepage(self):
         self.click(self.LINK_HOMEPAGE)

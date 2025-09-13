@@ -49,6 +49,7 @@ class ProductPage(BasePage):
             raise ValueError("product_number has to be between '1' and '50'")
         back = (By.ID, f"back-btn-{product_number}")
         self.click(back)
+        self.wait_until_invisible(LOADING_OVERLAY)
 
     def mark_as_favorite(self, product_number: str):
         self.wait_until_invisible(LOADING_OVERLAY)

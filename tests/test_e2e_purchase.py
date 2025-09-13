@@ -32,7 +32,7 @@ def test_shop_e2e(driver):
     checkout = CheckoutPage(driver)
     confirmation = ConfirmationPage(driver)
     header = HeaderPage(driver)
-    menclothes = MenClothesPage(driver)
+    men_clothes = MenClothesPage(driver)
 
     homepage.load()
     header.go_to_signup_page()
@@ -59,8 +59,8 @@ def test_shop_e2e(driver):
     cart.remove_from_cart("Laptop")
     cart.continue_shopping()
 
-    homepage.go_to_men_clothes()
-    menclothes.add_product_to_cart_by_number_1_10("3")
+    homepage.go_to_men_clothes_page()
+    men_clothes.add_product_to_cart_by_number_1_10("3")
     header.go_to_cart_page()
 
     cart.go_to_checkout()
