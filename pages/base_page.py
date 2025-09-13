@@ -32,7 +32,6 @@ class BasePage:
         element.click()
 
     def type(self, locator: tuple[By, str], text: str):
-        print(f"[DEBUG] locator recibido: {locator}")
         element = self.driver.find_element(*locator)
         element.clear()
         element.send_keys(text)
@@ -155,16 +154,15 @@ class BasePage:
             raise AssertionError(f"Timeout waiting for URL to contain '{expected_url}'. Current URL: '{current_url}'")
 
     def assert_url_negative(self, path: str) -> None:
-        def assert_url_negative(self, path: str, timeout: int = 2) -> None:
-            expected_url = URLS[path]
-            try:
-                WebDriverWait(self.driver, timeout).until(EC.url_contains(expected_url))
-                raise AssertionError(f"Did NOT expect to go to'{expected_url}', but URL changed.")
-            except TimeoutException:
-                current_url = self.driver.current_url
-                assert expected_url not in current_url, (
-                    f"Expected URL not to contain '{expected_url}', but it contained '{current_url}'"
-                )
+        expected_url = URLS[path]
+        try:
+            WebDriverWait(self.driver, timeout=2).until(EC.url_contains(expected_url))
+            raise AssertionError(f"Did NOT expect to go to'{expected_url}', but URL changed.")
+        except TimeoutException:
+            current_url = self.driver.current_url
+            assert expected_url not in current_url, (
+                f"Expected URL not to contain '{expected_url}', but it contained '{current_url}'"
+            )
 
 # probar, es para validar orden de links en el dom
     def test_order_of_links(driver):

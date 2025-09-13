@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from .base_page import BasePage
 from utils.config import URLS
@@ -15,6 +17,7 @@ class LoginPage(BasePage): #como parametro recibe basepage para poder replicar l
     LINK_HOMEPAGE = (By.XPATH, '//button[text()="Go to Home"]/ancestor::a')
 
     def load(self):
+        print("[DEBUG] Loading login page...")
         self.driver.get(URLS["login"])
         self.assert_url("login")
 
