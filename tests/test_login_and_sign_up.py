@@ -6,7 +6,7 @@ from pages.home_page import HomePage
 from pages.header_page import HeaderPage
 from tests.conftest import driver
 from utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
-from utils.config import EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_DOUBLE_AT, EMAIL_SPECIAL_CH_1, EMAIL_SPECIAL_CH_2, EMAIL_SPECIAL_CH_3, EMAIL_SPECIAL_CH_4, EMAIL_SPECIAL_CH_5, EMAIL_SPECIAL_CH_6, EMAIL_SPECIAL_CH_7
+from utils.config import PASSWORD_MAX_CHAR, PASSWORD_MAX_CHAR_PLUS1, EMAIL_MAX_CHAR, EMAIL_MAX_CHAR_PLUS1, EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_DOUBLE_AT, EMAIL_SPECIAL_CH_1, EMAIL_SPECIAL_CH_2, EMAIL_SPECIAL_CH_3, EMAIL_SPECIAL_CH_4, EMAIL_SPECIAL_CH_5, EMAIL_SPECIAL_CH_6, EMAIL_SPECIAL_CH_7
 
 @pytest.mark.login
 @pytest.mark.happypath
@@ -18,6 +18,20 @@ def test_login_success(driver):
     login.verify_logged_in_text()
 # Usually on the login page I would test registered emails and passwords, but on this website that is not the case, so the approach is a little different
 # Usually there would be no need to test valid emails on the login page, only on the sign up page, because the user would not have been able to register it on the first place
+
+def test_login_success_max_email_char(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_success(EMAIL_MAX_CHAR, PASSWORD)
+    login.verify_logged_in_text()
+
+def test_login_success_max_password_char(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_success(EMAIL_USER, PASSWORD_MAX_CHAR)
+    login.verify_logged_in_text()
 
 @pytest.mark.e2e
 @pytest.mark.login
@@ -58,6 +72,20 @@ def test_login_no_password(driver):
 
     login.load()
     login.fill_login_form_fail(EMAIL_USER, "")
+
+def test_login_max_char_email_plus1(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_MAX_CHAR_PLUS1, " ")
+# Fail, unknown character limit on input, fail detected
+
+def test_login_max_char_password_plus1(driver):
+    login = LoginPage(driver)
+
+    login.load()
+    login.fill_login_form_fail(EMAIL_USER, PASSWORD_MAX_CHAR_PLUS1)
+# Fail, unknown character limit on input, fail detected
 
 def test_login_wrong_email_1(driver):
     login = LoginPage(driver)
