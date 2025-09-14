@@ -1,26 +1,19 @@
-import time
 import pytest
 #page objects
 from pages.login_page import LoginPage
 from pages.signup_page import SignUpPage
-from pages.books_page import BooksPage
 from pages.cart_page import CartPage
 from pages.checkout_page import CheckoutPage
 from pages.confirmation_page import ConfirmationPage
 from pages.electronics_page import ElectronicsPage
-from pages.groceries_page import GroceriesPage
 from pages.header_page import HeaderPage
 from pages.home_page import HomePage
 from pages.menclothes_page import MenClothesPage
 from pages.product_detail_page import ProductPage
-from pages.specialdeals_page import SpecialDealsPage
-from pages.womenclothes_page import WomenClothesPage
-from tests.conftest import driver
+from conftest import driver
 from utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
 
 @pytest.mark.e2e
-@pytest.mark.sign_up
-@pytest.mark.login
 @pytest.mark.shop
 def test_shop_e2e(driver):
     signup = SignUpPage(driver)
