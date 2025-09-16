@@ -13,33 +13,94 @@ airport_schema = {
 }
 
 random_airport_data = {
-      "iata_code": "".join(random.choices(string.ascii_uppercase, k=3)), #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
-      "city": "La Paz", #una ciudad puede tener varios aeropuertos
-      "country": fake.country_code() #faker para datos random mokeados
+      "iata_code": "".join(random.choices(string.ascii_uppercase, k=3)),
+      "city": "La Paz",
+      "country": fake.country_code()
     }
 
 bad_airport_data = [{
-      "iata_code": "MM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
-      "city": "Oslo", #una ciudad puede tener varios aeropuertos
-      "country": "Noruega" #faker para datos random mokeados
+      "iata_code": "MM",
+      "city": "Oslo",
+      "country": "Noruega"
     },
     {
-      "iata_code": "MMMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
-      "city": "Oslo", #una ciudad puede tener varios aeropuertos
-      "country": "Noruega" #faker para datos random mokeados
+      "iata_code": "MMMM",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "123",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "!AA",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "/AA",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": ".AA",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": 123,
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "AAA",
+      "city": 123,
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "AAA",
+      "city": "Oslo",
+      "country": 123
+    },
+    {
+      "iata_code": "@AA",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "#AA",
+      "city": "Oslo",
+      "country": "Noruega"
+    },
+    {
+      "iata_code": "",
+      "city": "",
+      "country": ""
+    },
+    {
+      "iata_code": " ",
+      "city": " ",
+      "country": " "
     }
+
     ]
 
 good_airport_data = {
-      "iata_code": "MMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
-      "city": "Oslo", #una ciudad puede tener varios aeropuertos
-      "country": "Noruega" #faker para datos random mokeados
+      "iata_code": "MMM",
+      "city": "Oslo",
+      "country": "Noruega"
     }
 
-
 changed_airport_data = {
-      "iata_code": "MMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
-      "city": "Madrid", #una ciudad puede tener varios aeropuertos
-      "country": "España" #faker para datos random mokeados
+      "iata_code": "MMM",
+      "city": "Madrid",
+      "country": "España"
+    }
+
+changed_airport_data_iata_code = {
+      "iata_code": "NNN",
+      "city": "Madrid",
+      "country": "España"
     }
 
