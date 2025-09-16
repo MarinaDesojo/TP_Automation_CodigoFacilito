@@ -11,14 +11,13 @@ def api_request(method, path, **kwargs):
         if resp.status_code < 500 or i == RETRIES-1:
             try:
                 resp.raise_for_status()
-            except Exception as e:
+            except:
                 try:
                     print(f"Response: {resp.text}")
                 except:
                     pass
-                raise e
             return resp
-        time.sleep(1 << i) #valor que retorna i que sea menor que la cantidad de intentos, aunque no es una buena practica
+        time.sleep(5) #valor que retorna i que sea menor que la cantidad de intentos, aunque no es una buena practica
 
 
 def requests_with_error_handling(**kwargs):

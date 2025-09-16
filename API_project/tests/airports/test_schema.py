@@ -18,12 +18,28 @@ random_airport_data = {
       "country": fake.country_code() #faker para datos random mokeados
     }
 
-fixed_airport_data = {
+bad_airport_data = [{
+      "iata_code": "MM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
+      "city": "Oslo", #una ciudad puede tener varios aeropuertos
+      "country": "Noruega" #faker para datos random mokeados
+    },
+    {
+      "iata_code": "MMMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
+      "city": "Oslo", #una ciudad puede tener varios aeropuertos
+      "country": "Noruega" #faker para datos random mokeados
+    }
+    ]
+
+good_airport_data = {
       "iata_code": "MMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
       "city": "Oslo", #una ciudad puede tener varios aeropuertos
       "country": "Noruega" #faker para datos random mokeados
     }
 
 
-
+changed_airport_data = {
+      "iata_code": "MMM", #no se deberían repetir, su codigo es unico, codigo aleatorio de 3 letras
+      "city": "Madrid", #una ciudad puede tener varios aeropuertos
+      "country": "España" #faker para datos random mokeados
+    }
 
