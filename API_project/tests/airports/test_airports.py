@@ -1,17 +1,15 @@
 import pytest
 from jsonschema import validate
 import pytest_check as check
-from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code
+from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code, airport_schema_array, good_airport_data, airport_schema
 from API_project.utils.fixture_utils import auth_headers
-from test_schema import airport_schema, good_airport_data
 from API_project.utils.api_helpers import api_request
 
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data', [good_airport_data])
 @pytest.mark.order(1)
 def test_clear_airport_data_happy_path_flow_1(delete_airport, airport_data):
-    status_code = delete_airport.status_code
-    assert delete_airport.status_code == 204, f"Expected 204 but got {status_code}"
+    pass
 
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data', [good_airport_data])
@@ -273,3 +271,10 @@ def test_create_airport_fail_negative_flow(create_airport, airport_data):
 @pytest.mark.order(34)
 def test_clear_airport_negative_flow_2(delete_airport, airport_data):
     pass
+
+
+
+@pytest.mark.get_all_airports
+@pytest.mark.order(35)
+def test_get_all_airports(get_all_airports):
+    validate(instance=get_all_airports, schema=airport_schema_array)

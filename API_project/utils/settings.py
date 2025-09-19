@@ -10,6 +10,7 @@ fake = faker.Faker()
 
 AUTH_LOGIN = "/auth/login"
 USERS = "/users"
+USERS_ME = "/users/me"
 AIRPORTS = "/airports"
 FLIGHTS = "/flights"
 BOOKINGS = "/bookings"

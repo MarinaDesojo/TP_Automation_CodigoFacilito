@@ -12,6 +12,11 @@ airport_schema = {
     "additionalProperties": False
 }
 
+airport_schema_array = {
+    "type": "array",
+    "items": airport_schema
+}
+
 random_airport_data = {
       "iata_code": "".join(random.choices(string.ascii_uppercase, k=3)),
       "city": "La Paz",
