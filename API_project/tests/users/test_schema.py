@@ -24,14 +24,18 @@ good_user_data = {
         "role": "passenger"
     }
 
-created_user_data = {
-
-}
+# created_user_data = {
+#         "email": "us_er.na'me+tag3@7exam-ple.co.uk",
+#         "password": "123456",
+#         "full_name": "Alejo Pepe Sanchez",
+#         "role": "passenger"
+# }
 
 changed_user_data = {
-    "email": "user_user-1234@userdata.com",
+    "email": "user-1234@userdata.com",
     "password": "yes_a_password",
-    "full_name": "Violeta Juarez"
+    "full_name": "Violeta Juarez",
+    "role": "admin"
 }
 
 

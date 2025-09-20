@@ -42,8 +42,8 @@ def get_user(auth_headers, user_data):
     return r
 
 @pytest.fixture
-def update_user(auth_headers, user_data):
-    r = api_request(method="PUT", path=f'{USERS}/{user_data["user_id"]}', json=user_data, headers=auth_headers)
+def update_user(auth_headers, user_data, user_data_new):
+    r = api_request(method="PUT", path=f'{USERS}/{user_data["id"]}', json=user_data_new, headers=auth_headers)
     return r
 
 @pytest.fixture
@@ -52,13 +52,38 @@ def delete_user(auth_headers, user_id):
     return r
 
 
+# @pytest.fixture
+# def create_clear_user(user_data, auth_headers):
+#     r = api_request(method="POST", path=USERS, json=user_data, headers=auth_headers)
+#     r.raise_for_status()
+#     user_created = r.json()
+#     yield user_created
+#     api_request(method="DELETE", path=f"{USERS}/{user_created['id']}", headers=auth_headers)
+
+
 @pytest.fixture
 def create_clear_user(user_data, auth_headers):
     r = api_request(method="POST", path=USERS, json=user_data, headers=auth_headers)
     r.raise_for_status()
     user_created = r.json()
     yield user_created
-    api_request(method="DELETE", path=f"{USERS}/{user_created['id']}", headers=auth_headers)
+    try:
+        user_created = r.json()
+        user_id = user_created.get('id')
+        if user_id:
+            retries = 3
+            for attempt in range(retries):
+                d = api_request(method="DELETE", path=f"{USERS}/{user_id}", headers=auth_headers)
+                if d.status_code == 204:
+                    break
+                else:
+                    time.sleep(1)
+            else:
+                print(f"Warning: Failed to delete user {user_id} after {retries} attempts")
+        else:
+            print("Warning: User creation response missing 'id', skipping delete")
+    except Exception as e:
+        print(f"Exception during cleanup: {e}")
 
 
 # @pytest.fixture

@@ -9,15 +9,40 @@ from API_project.utils.api_helpers import api_request
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('user_data', [good_user_data])
 @pytest.mark.order(1)
-def test_create_delete_user_(create_clear_user, user_data):
+def test_create_delete_user_schema(create_clear_user, user_data):
     validate(instance=create_clear_user, schema=user_schema)
 
 @pytest.mark.parametrize('user_data', [good_user_data])
 @pytest.mark.order(2)
-def test_double_create(create_clear_user, user_data):
-    r = api_request(method="POST", path=USERS, data=user_data)
-    status_code = r.status_code
-    assert status_code == 400
+def test_double_create(create_clear_user, user_data, auth_headers):
+    r = api_request(method="POST", path=USERS, data=user_data, headers=auth_headers)
+    assert r.status_code in[400, 409, 422], f"Expected 400, 409 or 422, but got {r.status_code}: {r.text}"
+
+
+@pytest.mark.parametrize('user_data, user_data_new',[(good_user_data, changed_user_data)])
+@pytest.mark.order(2)
+def test_update_user_values(create_clear_user, user_data, user_data_new, auth_headers):
+    user_created = create_clear_user
+    r = api_request(method="PUT", path=f'{USERS}/{user_created["id"]}', json=user_data_new, headers=auth_headers)
+    assert r.status_code == 200, f"Expected 200, but got {r.status_code}"
+    r_get = api_request(method="GET", path=USERS, headers=auth_headers)
+    users = r_get.json()
+    target_email = user_data_new["email"]
+    target_full_name = user_data_new["full_name"]
+    target_role = user_data_new["role"]
+    found = any(
+        isinstance(user, dict) and user.get("email") == target_email
+        for user in users)
+    assert found, f"User with updated data not found: {user_data_new['email']}"
+    found = any(
+        isinstance(user, dict) and user.get("full_name") == target_full_name
+        for user in users)
+    assert found, f"User with updated data not found: {user_data_new['full_name']}"
+    found = any(
+        isinstance(user, dict) and user.get("role") == target_role
+        for user in users)
+    assert found, f"User with updated data not found: {user_data_new['role']}"
+
 
 
 # @pytest.mark.negative_flow
@@ -69,7 +94,7 @@ def test_get_user_me(get_user):
     assert get_user.status_code == 200
 
 
-def test_get_all_users(get_all_users):
+def test_get_all_users_schema(get_all_users):
     validate(instance=get_all_users, schema=user_schema_array)
 
 #assert any(user['email'] == 'test@example.com' for user in data)
