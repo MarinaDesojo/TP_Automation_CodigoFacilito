@@ -1,7 +1,8 @@
 import pytest
 from jsonschema import validate
 import pytest_check as check
-from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code, airport_schema_array, good_airport_data, airport_schema
+from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code, airport_schema_array, good_airport_data, airport_schema, good_airport_data_1
+from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.api_helpers import api_request
 
@@ -244,7 +245,7 @@ def test_clear_airport_update_iata_code_4(delete_airport, airport_data):
 @pytest.mark.double_delete
 @pytest.mark.parametrize('airport_data', [good_airport_data])
 @pytest.mark.order(31)
-def test_clear_airport_2asd(delete_airport, airport_data):
+def test_clear_not_created_airport(delete_airport, airport_data):
     status_code = delete_airport.status_code
     assert delete_airport.status_code == 404, f"Expected 404 but got {status_code}"
 # FAILS - BUG, GET 204 DESPITE OF PATH (IATA_CODE) NOT CREATED
@@ -278,3 +279,31 @@ def test_clear_airport_negative_flow_2(delete_airport, airport_data):
 @pytest.mark.order(35)
 def test_get_all_airports(get_all_airports):
     validate(instance=get_all_airports, schema=airport_schema_array)
+
+
+
+@pytest.mark.parametrize('airport_data', good_airport_data_1)
+def test_create_clear_airport_new_1(create_clear_airport, airport_data):
+    validate(instance=create_clear_airport, schema=airport_schema)
+
+
+
+@pytest.mark.negative_flow
+@pytest.mark.parametrize('airport_data', bad_airport_data)
+def test_create_clear_airport_fail_negative_flow(create_clear_airport_negative_test, airport_data, auth_headers):
+    r = create_clear_airport_negative_test
+    status_code = r.status_code
+
+    assert status_code in (400, 422), f"Expected 400 or 422, got {status_code}: {r.text}"
+
+    iata_code = airport_data.get('iata_code')
+    if iata_code:
+        get_resp = api_request(method="GET", path=AIRPORTS, headers=auth_headers, params={"iata_code": iata_code})
+        airports_found = get_resp.json()
+        for airport in airports_found:
+            if airport.get('iata_code') == iata_code:
+                print(f"Warning, user was created despite of {status_code} for: {iata_code}")
+                # borrar usuario encontrado (por si quedó colgado)
+                delete_resp = api_request(method="DELETE", path=f"{AIRPORTS}/{airport['iata_code']}", headers=auth_headers)
+                if delete_resp.status_code != 204:
+                    print(f"Warning: Failed to delete user {iata_code}")

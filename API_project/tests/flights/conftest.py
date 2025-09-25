@@ -1,39 +1,85 @@
-import random
-import string
-import datetime
-import requests, pytest
-from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS
+import datetime, random, requests, string
+import pytest, time
+from API_project.utils.api_helpers import api_request
+from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import admin_token, auth_headers
+
+
+@pytest.fixture
+def create_clear_flight(flight_data, auth_headers):
+    r = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
+    r.raise_for_status()
+    flight_created = r.json()
+    yield flight_created
+    try:
+        flight_created = r.json()
+        flight_id = flight_created.get('id')
+        if flight_id:
+            retries = 3
+            for attempt in range(retries):
+                d = api_request(method="DELETE", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+                if d.status_code == 204:
+                    break
+                else:
+                    time.sleep(1)
+            else:
+                print(f"Warning: Failed to delete flight {flight_id} after {retries} attempts")
+        else:
+            print("Warning: Flight creation response missing 'id', skipping delete")
+    except Exception as e:
+        print(f"Exception during cleanup: {e}")
+
+@pytest.fixture
+def create_clear_aircraft_negative_test(aircraft_data, auth_headers):
+    r = api_request(method="POST", path=USERS, json=aircraft_data, headers=auth_headers)
+    yield r
+    try:
+        aircraft_created = r.json()
+        aircraft_id = aircraft_created.get('id')
+        if aircraft_id:
+            retries = 3
+            for attempt in range(retries):
+                d = api_request(method="DELETE", path=f"{AIRCRAFTS}/{aircraft_id}", headers=auth_headers)
+                if d.status_code == 204:
+                    break
+                else:
+                    time.sleep(1)
+            else:
+                print(f"Warning: Failed to delete user {aircraft_id} after {retries} attempts")
+        else:
+            print("Warning: Aircraft creation response missing 'id', skipping delete")
+    except Exception as e:
+        print(f"Exception during cleanup: {e}")
+
 
 
 
 @pytest.fixture
-def flight(auth_headers):
-    flight_data = {
-  "origin": "".join(random.choices(string.ascii_uppercase, k=3)),
-  "destination": "".join(random.choices(string.ascii_uppercase, k=3)),
-  "departure_time": fake.date_time(tzinfo=datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z'),
-  "arrival_time": fake.date_time(tzinfo=datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z'),
-  "base_price": round(fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2),
-  "aircraft_id": fake.bothify(text='???-###')
-}
-    r = requests_with_error_handling(method="POST", url=BASE_URL + FLIGHTS, json=flight_data, headers=auth_headers, timeout=5)
-    # r = requests.post(BASE_URL + FLIGHTS, json=flight_data, headers=auth_headers, timeout=5)
-    # try:
-    #     r.raise_for_status()
-    # except Exception as e:
-    #     try:
-    #         print(r.text())
-    #     except:
-    #         pass
-    #     raise e
-    flight_response = r.json() #crea una variable con el json de la response
-    yield flight_response #para probar el airport_response en el mismo fixture
+def get_all_aircrafts(auth_headers, limit=50):
+    skip = 0
+    results = []
+    while True:
+        r = api_request(method="GET", path=AIRCRAFTS, headers=auth_headers, params={"skip": skip, "limit": limit})
+        r.raise_for_status()
+        aircrafts_list = r.json()
+        if not aircrafts_list:
+            break
+        results.extend(aircrafts_list)
+        skip += limit
+    return results
 
-    requests.delete(f'{BASE_URL}{FLIGHTS}/{flight_response["id"]}', headers=auth_headers, timeout=5)
+@pytest.fixture
+def get_aircraft(auth_headers, aircraft_data):
+    r = api_request(method="GET", path=AIRCRAFTS, headers=auth_headers)
+    return r
 
+@pytest.fixture
+def update_aircraft(auth_headers, aircraft_data, aircraft_data_new):
+    r = api_request(method="PUT", path=f'{AIRCRAFTS}/{aircraft_data["id"]}', json=aircraft_data_new, headers=auth_headers)
+    return r
 
-#crear otros fixture con datos fijos para poder utilizar para otros test, y despues no olvidar de borrarlos
+@pytest.fixture
+def delete_aircraft(auth_headers, aircraft_id):
+    r = api_request(method="DELETE", path=f'{AIRCRAFTS}/{aircraft_id}', headers=auth_headers)
+    return r
 
-def test_flight(flight):
-    print(flight)

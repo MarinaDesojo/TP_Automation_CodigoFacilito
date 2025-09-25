@@ -25,7 +25,7 @@ def generate_tail_number(min_len=5, max_len=10):
 random_aircraft_data = {
       "tail_number": generate_tail_number(),
       "model": fake.word(),
-      "capacity": random.randint(0,1000)
+      "capacity": random.randint(0,999)
     }
 
 bad_aircraft_data = [{
@@ -57,43 +57,37 @@ bad_aircraft_data = [{
       "tail_number": "1234567",
       "model": "B 40",
       "capacity": 1000
+    },
+    {
+      "tail_number": "",
+      "model": "B 40",
+      "capacity": 40
+    },
+    {
+      "tail_number": " ",
+      "model": "B 40",
+      "capacity": 40
+    },
+    {
+      "tail_number": "1234567",
+      "model": "",
+      "capacity": 40
+    },
+    {
+      "tail_number": "1234567",
+      "model": " ",
+      "capacity": 40
+    },
+    {
+      "tail_number": "1234567",
+      "model": "B 40",
+      "capacity": ""
+    },
+    {
+      "tail_number": "1234567",
+      "model": "B 40",
+      "capacity": -1
     }
-    # ,
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # }
     ]
 
 good_aircraft_data = {

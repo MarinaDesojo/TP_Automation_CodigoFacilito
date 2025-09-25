@@ -2,7 +2,7 @@ import pytest
 from jsonschema import validate
 import pytest_check as check
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
-from API_project.tests.aircrafts.test_schema import bad_aircraft_data, changed_aircraft_data, aircraft_schema_array, good_aircraft_data, aircraft_schema
+from API_project.tests.aircrafts.test_schema import bad_aircraft_data, changed_aircraft_data, aircraft_schema_array, good_aircraft_data, aircraft_schema, random_aircraft_data
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.api_helpers import api_request
 

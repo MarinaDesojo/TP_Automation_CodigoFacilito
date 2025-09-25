@@ -109,3 +109,14 @@ changed_airport_data_iata_code = {
       "country": "España"
     }
 
+good_airport_data_1 = [{
+    "iata_code": "MMM",
+    "city": "Oslo",
+    "country": "Noruega"
+}]
+
+good_airport_data_2 = [{
+    "iata_code": "NNN",
+    "city": "Madrid",
+    "country": "España"
+}]
