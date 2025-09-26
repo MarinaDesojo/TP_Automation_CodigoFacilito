@@ -17,7 +17,7 @@ def api_request(method, path, **kwargs):
                 except:
                     pass
             return resp
-        time.sleep(5) #valor que retorna i que sea menor que la cantidad de intentos, aunque no es una buena practica
+        time.sleep(5)
 
 
 def requests_with_error_handling(**kwargs):

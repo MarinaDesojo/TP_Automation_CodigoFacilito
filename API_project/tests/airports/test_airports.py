@@ -1,7 +1,7 @@
 import pytest
 from jsonschema import validate
 import pytest_check as check
-from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code, airport_schema_array, good_airport_data, airport_schema, good_airport_data_1
+from API_project.tests.airports.test_schema import bad_airport_data, changed_airport_data, changed_airport_data_iata_code, airport_schema_array, good_airport_data, airport_schema, good_airport_data_1, good_airport_data_3
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.api_helpers import api_request
@@ -282,9 +282,9 @@ def test_get_all_airports(get_all_airports):
 
 
 
-@pytest.mark.parametrize('airport_data', good_airport_data_1)
-def test_create_clear_airport_new_1(create_clear_airport, airport_data):
-    validate(instance=create_clear_airport, schema=airport_schema)
+@pytest.mark.parametrize('airport_data_1', good_airport_data_3)
+def test_create_clear_airport_new_1(create_clear_airport_1, airport_data_1):
+    validate(instance=create_clear_airport_1, schema=airport_schema)
 
 
 
