@@ -22,96 +22,83 @@ flight_schema_array = {
     "items": flight_schema
 }
 
+departure = fake.date_time(tzinfo=datetime.timezone.utc)
+
 random_flight_data = {
     "origin": "".join(random.choices(string.ascii_uppercase, k=3)),
     "destination": "".join(random.choices(string.ascii_uppercase, k=3)),
-    "departure_time": fake.date_time(tzinfo=datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z'),
-    "arrival_time": fake.date_time(tzinfo=datetime.timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z'),
+    "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+    "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
     "base_price": round(fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2),
     "aircraft_id": fake.bothify(text='???-###')
 }
 
-bad_flight_data = [{
-    "origin": "",
-    "destination": "",
-    "departure_time": "",
-    "arrival_time": "",
-    "base_price": "",
-    "aircraft_id": ""
+bad_flight_scenarios = [
+    {
+        "name": "arrival_before_departure",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": (departure - datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": 100.0
     },
     {
-      "tail_number": "1234",
-      "model": "B 40",
-      "capacity": 40
+        "name": "negative_base_price",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": -50.0
     },
     {
-      "tail_number": "12345678910",
-      "model": "B 40",
-      "capacity": 40
+        "name": "arrival_equals_departure",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": departure.isoformat().replace('+00:00', 'Z'),
+        "base_price": 200.0
     },
     {
-      "tail_number": "1234567",
-      "model": 40,
-      "capacity": 40
+        "name": "base_price string",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": "500"
     },
     {
-      "tail_number": "1234567",
-      "model": "B 40",
-      "capacity": "40"
+        "name": "base_price string2",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": "zero"
     },
     {
-      "tail_number": "1234567",
-      "model": "B 40",
-      "capacity": 1000
+        "name": "future datetime format departure",
+        "departure_time": "19001-01-01 15:25:00Z",
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": 50.0
+    },
+    {
+        "name": "future datetime format arrival",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": "19001-01-01 15:25:00Z",
+        "base_price": 50.0
+    },
+    {
+        "name": "past datetime format arrival",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": "191-01-01 15:25:00Z",
+        "base_price": 50.0
+    },
+    {
+        "name": "past datetime format departure",
+        "departure_time": "191-01-01 15:25:00Z",
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": 50.0
+    },
+    {
+        "name": "departure_time int",
+        "departure_time": 1900,
+        "arrival_time": (departure + datetime.timedelta(hours=2)).isoformat().replace('+00:00', 'Z'),
+        "base_price": 50.0
+    },
+    {
+        "name": "arrival_time int",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": 1900,
+        "base_price": 50.0
     }
-    # ,
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # },
-    # {
-    #   "tail_number": "1234567",
-    #   "model": "B 40",
-    #   "capacity": 40
-    # }
-    ]
-
-good_flight_data = {
-      "tail_number": "123AB",
-      "model": "B 40",
-      "capacity": 40
-    }
-
-changed_flight_data = {
-      "tail_number": "45678910CD",
-      "model": "D-750",
-      "capacity": 150
-    }
-
+]
 

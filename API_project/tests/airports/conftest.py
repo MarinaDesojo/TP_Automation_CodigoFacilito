@@ -60,8 +60,8 @@ def create_clear_airport_1(auth_headers, airport_data_1):
 
     r = api_request(method="POST", path=AIRPORTS, json=airport_data_1, headers=auth_headers)
     r.raise_for_status()
-    airport_created = r.json()
-    yield airport_created
+    airport_created_1 = r.json()
+    yield airport_created_1
     try:
         retries = 3
         for attempt in range(retries):
@@ -97,10 +97,9 @@ def create_clear_airport_2(auth_headers, airport_data_2):
 
     r = api_request(method="POST", path=AIRPORTS, json=airport_data_2, headers=auth_headers)
     r.raise_for_status()
-    airport_created = r.json()
-    yield airport_created
+    airport_created_2 = r.json()
+    yield airport_created_2
     try:
-        iata_code = airport_created["iata_code"]
         retries = 3
         for attempt in range(retries):
             d = api_request(method="DELETE", path=f"{AIRPORTS}/{iata_code}", headers=auth_headers)
@@ -112,6 +111,27 @@ def create_clear_airport_2(auth_headers, airport_data_2):
             print(f"Warning: Failed to delete airport {iata_code} after {retries} attempts")
     except Exception as e:
         print(f"Exception during cleanup: {e}")
+
+
+# @pytest.fixture
+# def create_clear_airport_negative_test(airport_data, auth_headers):
+#     r = api_request(method="POST", path=AIRPORTS, json=airport_data, headers=auth_headers)
+#     yield r
+#     try:
+#         airport_created = r.json()
+#         iata_code = airport_created["iata_code"]
+#         retries = 3
+#         for attempt in range(retries):
+#             d = api_request(method="DELETE", path=f"{AIRPORTS}/{iata_code}", headers=auth_headers)
+#             if d.status_code == 204:
+#                 break
+#             else:
+#                 time.sleep(1)
+#         else:
+#             print(f"Warning: Failed to delete airport {iata_code} after {retries} attempts")
+#     except Exception as e:
+#         print(f"Exception during cleanup: {e}")
+
 
 
 @pytest.fixture
@@ -124,11 +144,35 @@ def create_clear_airport_negative_test(airport_data, auth_headers):
         retries = 3
         for attempt in range(retries):
             d = api_request(method="DELETE", path=f"{AIRPORTS}/{iata_code}", headers=auth_headers)
-            if d.status_code == 204:
+            get_airport_after_delete = api_request(method="GET", path=f"{AIRPORTS}/{iata_code}", headers=auth_headers)
+            if get_airport_after_delete.status_code in (404, 422):
+                print("Airport deleted successfully")
                 break
             else:
+                print(f"Airport still exists, status {get_airport_after_delete.status_code}, retrying delete")
                 time.sleep(1)
         else:
             print(f"Warning: Failed to delete airport {iata_code} after {retries} attempts")
     except Exception as e:
         print(f"Exception during cleanup: {e}")
+
+
+# def clear_airport(auth_headers, airport_data):
+#     MAX_RETRIES = 5
+#     iata_code = airport_data["iata_code"]
+#     for attempt in range(MAX_RETRIES):
+#         get_airport = api_request(method="GET", path=f'{AIRPORTS}/{iata_code}', headers=auth_headers)
+#
+#         if get_airport.status_code == 404:
+#             print(f"[Attempt {attempt + 1}] Airport {iata_code} not found. Safe to create.")
+#             break
+#
+#         print(f"[Attempt {attempt + 1}] Airport still exists (status: {get_airport.status_code}), trying DELETE...")
+#         delete_airport = api_request(method="DELETE", path=f'{AIRPORTS}/{iata_code}', headers=auth_headers)
+#         print(f"[Attempt {attempt + 1}] DELETE returned status {delete_airport.status_code}")
+#
+#         time.sleep(1)
+#     else:
+#         raise Exception(f"Failed to delete airport {iata_code} after {MAX_RETRIES} attempts")
+#
+#     yield

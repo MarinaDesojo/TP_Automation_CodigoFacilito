@@ -121,8 +121,3 @@ good_airport_data_2 = {
     "country": "España"
 }
 
-good_airport_data_3 = [{
-    "iata_code": "NNN",
-    "city": "Madrid",
-    "country": "España"
-}]
