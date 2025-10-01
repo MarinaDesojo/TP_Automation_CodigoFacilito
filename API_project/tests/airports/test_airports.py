@@ -392,5 +392,3 @@ def test_update_to_existing_iata_code(create_clear_airport_1, create_clear_airpo
     assert update.status_code == 422, f"Airport was updated to an already existing iata_code {airport_created_2_iata_code} when it shouldn't have."
 
 
-
-
