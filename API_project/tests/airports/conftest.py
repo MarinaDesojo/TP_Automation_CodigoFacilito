@@ -38,7 +38,6 @@ def delete_airport(auth_headers, airport_data):
     r = api_request(method="DELETE", path=f'{AIRPORTS}/{airport_data["iata_code"]}', headers=auth_headers)
     return r
 
-
 @pytest.fixture
 def create_clear_airport_1(auth_headers, airport_data_1):
     MAX_RETRIES = 5
@@ -75,6 +74,7 @@ def create_clear_airport_1(auth_headers, airport_data_1):
             print(f"Warning: Failed to delete airport {iata_code} after {retries} attempts")
     except Exception as e:
         print(f"Exception during cleanup: {e}")
+
 
 @pytest.fixture
 def create_clear_airport_2(auth_headers, airport_data_2):

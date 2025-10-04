@@ -58,7 +58,7 @@ def create_clear_aircraft(aircraft_data, auth_headers):
 
 @pytest.fixture
 def create_clear_aircraft_negative_test(aircraft_data, auth_headers):
-    r = api_request(method="POST", path=USERS, json=aircraft_data, headers=auth_headers)
+    r = api_request(method="POST", path=AIRCRAFTS, json=aircraft_data, headers=auth_headers)
     yield r
     try:
         aircraft_created = r.json()

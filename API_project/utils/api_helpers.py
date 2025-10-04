@@ -20,17 +20,18 @@ def api_request(method, path, **kwargs):
         time.sleep(5)
 
 
-def requests_with_error_handling(**kwargs):
-    r = requests.request(**kwargs)
+def requests_with_error_handling(method, path, **kwargs):
+    url = f"{BASE_URL}{path}"
+    resp = requests.request(method, url, timeout=5, **kwargs)
     try:
-        r.raise_for_status()
+        resp.raise_for_status()
     except Exception as e:
         try:
-            print(f"Response: {r.text}")
+            print(f"Response: {resp.text}")
         except:
             pass
         raise e
-    return r
+    return resp
 
 
 

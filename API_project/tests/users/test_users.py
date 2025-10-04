@@ -22,9 +22,9 @@ def test_double_create(create_clear_user, user_data, auth_headers):
 @pytest.mark.parametrize('user_data, user_data_new',[(good_user_data, changed_user_data)])
 @pytest.mark.order(3)
 def test_update_user_values(create_clear_user, user_data, user_data_new, auth_headers):
-    user_created = create_clear_user
-    r = api_request(method="PUT", path=f'{USERS}/{user_created["id"]}', json=user_data_new, headers=auth_headers)
-    assert r.status_code == 200, f"Expected 200, but got {r.status_code}"
+    user_created_json = create_clear_user
+    r = api_request(method="PUT", path=f'{USERS}/{user_created_json["id"]}', json=user_data_new, headers=auth_headers)
+    r.raise_for_status()
     r_get = api_request(method="GET", path=USERS, headers=auth_headers)
     users = r_get.json()
     target_email = user_data_new["email"]

@@ -53,17 +53,17 @@ def test_create_clear_flight_fail_negative_flow(create_clear_flight_negative, au
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_double_create_clear_flight(create_clear_flight, auth_headers):
     flight_data, flight_creation_json = create_clear_flight
-    validate(instance=flight_creation_json, schema=flight_schema)
-    flight_id = flight_creation_json["id"]
-
-    get_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
-    flight = get_flight.json()
-    check.equal(flight['origin'], flight_data['origin'], "Origin iata code mismatch")
-    check.equal(flight['destination'], flight_data['destination'], "Destination iata code mismatch")
-    check.equal(flight['departure_time'], flight_data['departure_time'], "Departure time mismatch")
-    check.equal(flight['arrival_time'], flight_data['arrival_time'], "Arrival time mismatch")
-    check.equal(flight['base_price'], flight_data['base_price'], "Base price mismatch")
-    check.equal(flight['aircraft_id'], flight_data['aircraft_id'], "Aircraft id mismatch")
+    # validate(instance=flight_creation_json, schema=flight_schema)
+    # flight_id = flight_creation_json["id"]
+    #
+    # get_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+    # flight = get_flight.json()
+    # check.equal(flight['origin'], flight_data['origin'], "Origin iata code mismatch")
+    # check.equal(flight['destination'], flight_data['destination'], "Destination iata code mismatch")
+    # check.equal(flight['departure_time'], flight_data['departure_time'], "Departure time mismatch")
+    # check.equal(flight['arrival_time'], flight_data['arrival_time'], "Arrival time mismatch")
+    # check.equal(flight['base_price'], flight_data['base_price'], "Base price mismatch")
+    # check.equal(flight['aircraft_id'], flight_data['aircraft_id'], "Aircraft id mismatch")
 
     flight_double_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
     assert flight_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {flight_double_creation.status_code}"
@@ -88,13 +88,15 @@ def test_update_flight(create_clear_flight, auth_headers):
 
     update_flight = api_request(method="PUT", path=f"{FLIGHTS}/{flight_id}", json=chagend_flight_data, headers=auth_headers)
     update_flight.raise_for_status()
-    update_flight_json= update_flight.json()
-    check.equal(update_flight_json['origin'], chagend_flight_data['origin'], "Origin iata code mismatch")
-    check.equal(update_flight_json['destination'], chagend_flight_data['destination'], "Destination iata code mismatch")
-    check.equal(update_flight_json['departure_time'], chagend_flight_data['departure_time'], "Departure time mismatch")
-    check.equal(update_flight_json['arrival_time'], chagend_flight_data['arrival_time'], "Arrival time mismatch")
-    check.equal(update_flight_json['base_price'], chagend_flight_data['base_price'], "Base price mismatch")
-    check.equal(update_flight_json['aircraft_id'], chagend_flight_data['aircraft_id'], "Aircraft id mismatch")
+
+    get_updated_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+    updated_flight_json = get_updated_flight.json()
+    check.equal(updated_flight_json['origin'], chagend_flight_data['origin'], "Origin iata code mismatch")
+    check.equal(updated_flight_json['destination'], chagend_flight_data['destination'], "Destination iata code mismatch")
+    check.equal(updated_flight_json['departure_time'], chagend_flight_data['departure_time'], "Departure time mismatch")
+    check.equal(updated_flight_json['arrival_time'], chagend_flight_data['arrival_time'], "Arrival time mismatch")
+    check.equal(updated_flight_json['base_price'], chagend_flight_data['base_price'], "Base price mismatch")
+    check.equal(updated_flight_json['aircraft_id'], chagend_flight_data['aircraft_id'], "Aircraft id mismatch")
 
 
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])

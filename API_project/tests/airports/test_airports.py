@@ -370,7 +370,7 @@ def test_update_airport_data_not_iata_code(create_clear_airport_1, airport_data_
     airport_created_iata_code = airport_created.get('iata_code')
 
     update_airport_2 = api_request(method="PUT", path=f"{AIRPORTS}/{airport_created_iata_code}", json=airport_data_2, headers=auth_headers)
-    assert update_airport_2.status_code == 200
+    update_airport_2.raise_for_status()
     update_airport_2_json = update_airport_2.json()
 
     get_airport_1 = api_request(method="GET", path=f"{AIRPORTS}/{airport_created_iata_code}", headers=auth_headers)
