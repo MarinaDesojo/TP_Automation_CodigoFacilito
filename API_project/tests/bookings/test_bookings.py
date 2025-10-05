@@ -59,54 +59,8 @@ def test_double_create_clear_booking(create_clear_booking, auth_headers):
     assert booking_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {booking_double_creation.status_code}"
 
 
-# Fail, creí que sumaba los passenger de 2 bookings pero no funciona así, hace un booking con su propio id cada uno
-
-# @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
-# def test_double_create_clear_booking_different_data(create_clear_booking, auth_headers):
-#     booking_data, booking_creation_json = create_clear_booking
-#     validate(instance=booking_creation_json, schema=booking_schema)
-#     booking_id = booking_creation_json["id"]
-#
-#     import random
-#
-#     second_booking_data = {
-#         "flight_id": booking_data["flight_id"],
-#         "passengers": [
-#             {
-#                 "full_name": fake.name(),
-#                 "passport": fake.bothify(text='??######'),
-#                 "seat": f"{random.randint(1, 60)}{random.choice(['A', 'B', 'C', 'D', 'E', 'F'])}"
-#             }
-#         ],
-#         "additionalProperties": False
-#     }
-#
-#     booking_double_creation = api_request(method="POST", path=BOOKINGS, json=second_booking_data, headers=auth_headers)
-#     assert booking_double_creation.status_code == 201, f"Expected 201, got {booking_double_creation.status_code}"
-#     booking_double_creation_json = booking_double_creation.json()
-#     booking_double_creation_id = booking_double_creation_json["id"]
-#
-#     get_first_booking = api_request(method="GET", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
-#     get_first_booking_json = get_first_booking.json()
-#
-#     get_second_booking = api_request(method="GET", path=f"{BOOKINGS}/{booking_double_creation_id}", headers=auth_headers)
-#     get_second_booking_json = get_second_booking.json()
-#
-#     for i, passenger_first_booking in enumerate(get_first_booking_json["passengers"]):
-#         passenger_data_first_booking = booking_data["passengers"][i]
-#         check.equal(passenger_first_booking["full_name"], passenger_data_first_booking["full_name"], f"Full name mismatch for passenger {i}")
-#         check.equal(passenger_first_booking["passport"], passenger_data_first_booking["passport"], f"Passport mismatch for passenger {i}")
-#         check.equal(passenger_first_booking["seat"], passenger_data_first_booking["seat"], f"Seat mismatch for passenger {i}")
-#
-#     for i, passenger_second_booking in enumerate(get_second_booking_json["passengers"]):
-#         passenger_data_second_booking = second_booking_data["passengers"][i]
-#         check.equal(passenger_second_booking["full_name"], passenger_data_second_booking["full_name"], f"Full name mismatch for passenger {i}")
-#         check.equal(passenger_second_booking["passport"], passenger_data_second_booking["passport"], f"Passport mismatch for passenger {i}")
-#         check.equal(passenger_second_booking["seat"], passenger_data_second_booking["seat"], f"Seat mismatch for passenger {i}")
-
-
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
-def test_update_bookingt(create_clear_booking, auth_headers):
+def test_update_booking_to_existing(create_clear_booking, auth_headers):
     booking_data, booking_creation_json = create_clear_booking
     booking_id = booking_creation_json["id"]
 
