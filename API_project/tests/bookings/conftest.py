@@ -47,11 +47,23 @@ def create_clear_booking(create_clear_flight, passenger_data, auth_headers):
     else:
         raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
 
+@pytest.fixture
+def get_all_bookings(auth_headers, limit=50):
+    skip = 0
+    results = []
+    while True:
+        r = api_request(method="GET", path=BOOKINGS, headers=auth_headers, params={"skip": skip, "limit": limit})
+        r.raise_for_status()
+        flights_list = r.json()
+        if not flights_list:
+            break
+        results.extend(flights_list)
+        skip += limit
+    return results
 
 @pytest.fixture(params=bad_booking_passenger_data, ids=[f"case_{i}" for i in range(len(bad_booking_passenger_data))])
 def bad_passenger_data(request):
     return request.param
-
 
 @pytest.fixture
 def create_clear_booking_negative(create_clear_flight, bad_passenger_data, auth_headers):
@@ -86,22 +98,6 @@ def create_clear_booking_negative(create_clear_flight, bad_passenger_data, auth_
     else:
         raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
 
-
-@pytest.fixture
-def get_all_bookings(auth_headers, limit=50):
-    skip = 0
-    results = []
-    while True:
-        r = api_request(method="GET", path=BOOKINGS, headers=auth_headers, params={"skip": skip, "limit": limit})
-        r.raise_for_status()
-        flights_list = r.json()
-        if not flights_list:
-            break
-        results.extend(flights_list)
-        skip += limit
-    return results
-
-
 @pytest.fixture
 def bookings_variable_path_teardown(create_clear_flight, passenger_data, auth_headers):
     flight_data, flight_creation_json = create_clear_flight
@@ -127,5 +123,37 @@ def bookings_variable_path_teardown(create_clear_flight, passenger_data, auth_he
         else:
             raise Exception(f"Resource at {path} was not deleted after {MAX_RETRIES} attempts")
 
+@pytest.fixture
+def create_clear_booking_fail_not_authenticated(create_clear_flight, passenger_data, auth_headers):
+    flight_data, flight_creation_json = create_clear_flight
+    flight_id = flight_creation_json["id"]
 
+
+    booking_data = {
+        "flight_id": flight_id,
+        "passengers": passenger_data,
+        "additionalProperties": False
+    }
+
+    booking_creation = api_request(method="POST", path=BOOKINGS, json=booking_data)
+    booking_creation_status_code = booking_creation.status_code
+
+    yield booking_data, booking_creation_status_code
+
+    MAX_RETRIES = 3
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            booking_creation_json = booking_creation.json()
+            booking_id = booking_creation_json["id"]
+            api_request(method="DELETE", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
+            get_booking_after_delete = api_request(method="GET", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
+            if get_booking_after_delete.status_code in (404, 422):
+                print("Booking deleted successfully")
+                break
+            else:
+                print (f"Booking code {booking_id} still exists, get status {get_booking_after_delete.status_code}, retrying delete")
+        except Exception as e:
+            print (f"Error during request {e}")
+    else:
+        raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
 

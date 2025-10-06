@@ -6,21 +6,14 @@ from API_project.tests.aircrafts.test_schema import bad_aircraft_data, changed_a
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.api_helpers import api_request
 
+@pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
-@pytest.mark.order(1)
-def test_create_delete_aircraft_schema(create_clear_aircraft, aircraft_data):
+def test_create_clear_aircraft_schema(create_clear_aircraft, aircraft_data):
     validate(instance=create_clear_aircraft, schema=aircraft_schema)
 
-@pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
-@pytest.mark.order(2)
-def test_double_create(create_clear_aircraft, aircraft_data, auth_headers):
-    r = api_request(method="POST", path=AIRCRAFTS, data=aircraft_data, headers=auth_headers)
-    assert r.status_code in[400, 409, 422], f"Expected 400, 409 or 422, but got {r.status_code}: {r.text}"
-
-
+@pytest.mark.api
 @pytest.mark.parametrize('aircraft_data, aircraft_data_new',[(good_aircraft_data, changed_aircraft_data)])
-@pytest.mark.order(3)
 def test_update_aircraft_values(create_clear_aircraft, aircraft_data, aircraft_data_new, auth_headers):
     aircraft_created = create_clear_aircraft
     r = api_request(method="PUT", path=f'{AIRCRAFTS}/{aircraft_created["id"]}', json=aircraft_data_new, headers=auth_headers)
@@ -31,8 +24,19 @@ def test_update_aircraft_values(create_clear_aircraft, aircraft_data, aircraft_d
     check.equal(update_aircraft_json['model'], changed_aircraft_data['model'], "Model mismatch")
     check.equal(update_aircraft_json['capacity'], changed_aircraft_data['capacity'], "Capacity mismatch")
 
-@pytest.mark.order(4)
-@pytest.mark.negative_flow
+@pytest.mark.api
+def test_get_all_aircrafts(get_all_aircrafts):
+    validate(instance=get_all_aircrafts, schema=aircraft_schema_array)
+
+@pytest.mark.api
+@pytest.mark.fail
+@pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
+def test_double_create(create_clear_aircraft, aircraft_data, auth_headers):
+    r = api_request(method="POST", path=AIRCRAFTS, data=aircraft_data, headers=auth_headers)
+    assert r.status_code in[400, 409, 422], f"Expected 400, 409 or 422, but got {r.status_code}: {r.text}"
+
+@pytest.mark.api
+@pytest.mark.fail
 @pytest.mark.parametrize('aircraft_data', bad_aircraft_data)
 def test_create_clear_aircraft_fail_negative_flow(create_clear_aircraft_negative_test, aircraft_data, auth_headers):
     r = create_clear_aircraft_negative_test
@@ -54,13 +58,9 @@ def test_create_clear_aircraft_fail_negative_flow(create_clear_aircraft_negative
                 print(f"Warning: Failed to delete aircraft {aircraft_id}")
 
 
-@pytest.mark.order(5)
-def test_get_all_aircrafts(get_all_aircrafts):
-    validate(instance=get_all_aircrafts, schema=aircraft_schema_array)
-
-
-
-
-
-
-
+@pytest.mark.api
+@pytest.mark.fail
+@pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
+def test_create_clear_aircraft_not_authenticated(create_clear_aircraft_fail_not_authenticated):
+    aircraft_created_status_code = create_clear_aircraft_fail_not_authenticated
+    assert aircraft_created_status_code in (401, 403), f"Expected 401 or 403, got {aircraft_created_status_code}. This suggests the API accepted an aircraft creation request without authentication, or failed to return the correct validation error."

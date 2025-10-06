@@ -1,4 +1,4 @@
-import random, string, datetime
+import random
 from API_project.utils.settings import fake
 
 booking_schema = {
