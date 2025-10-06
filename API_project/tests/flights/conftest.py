@@ -48,6 +48,19 @@ def create_clear_flight(create_clear_airport_1, create_clear_airport_2, create_c
     else:
         raise Exception(f"Flight was not deleted after {MAX_RETRIES} attempts")
 
+@pytest.fixture
+def get_all_flights(auth_headers, limit=50):
+    skip = 0
+    results = []
+    while True:
+        r = api_request(method="GET", path=FLIGHTS, headers=auth_headers, params={"skip": skip, "limit": limit})
+        r.raise_for_status()
+        flights_list = r.json()
+        if not flights_list:
+            break
+        results.extend(flights_list)
+        skip += limit
+    return results
 
 @pytest.fixture
 def create_clear_flight_negative(create_clear_airport_1, create_clear_airport_2, create_clear_aircraft, bad_flight_scenarios, auth_headers):
@@ -63,7 +76,6 @@ def create_clear_flight_negative(create_clear_airport_1, create_clear_airport_2,
         "base_price": bad_flight_scenarios["base_price"],
         "aircraft_id": aircraft_id
     }
-
 
     flight_creation = api_request(method="POST", path=FLIGHTS, json=bad_flight_data, headers=auth_headers)
     flight_creation_json = flight_creation.json()
@@ -89,22 +101,6 @@ def create_clear_flight_negative(create_clear_airport_1, create_clear_airport_2,
     except Exception as e:
         print(f"Exception during cleanup: {e}")
 
-
-@pytest.fixture
-def get_all_flights(auth_headers, limit=50):
-    skip = 0
-    results = []
-    while True:
-        r = api_request(method="GET", path=FLIGHTS, headers=auth_headers, params={"skip": skip, "limit": limit})
-        r.raise_for_status()
-        flights_list = r.json()
-        if not flights_list:
-            break
-        results.extend(flights_list)
-        skip += limit
-    return results
-
-
 @pytest.fixture
 def flight_variable_path_teardown(auth_headers):
     resources = []
@@ -126,3 +122,43 @@ def flight_variable_path_teardown(auth_headers):
                 print(f"Error during request {e}")
         else:
             raise Exception(f"Resource at {path} was not deleted after {MAX_RETRIES} attempts")
+
+@pytest.fixture
+def create_clear_flight_fail_not_authenticated(create_clear_airport_1, create_clear_airport_2, create_clear_aircraft, auth_headers):
+    origin = create_clear_airport_1.get("iata_code")
+    destination = create_clear_airport_2.get("iata_code")
+    aircraft_id = create_clear_aircraft.get("id")
+
+    departure = fake.date_time(tzinfo=datetime.timezone.utc)
+    arrival = departure + datetime.timedelta(hours=5)
+
+    flight_data = {
+        "origin": origin,
+        "destination": destination,
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
+        "base_price": round(fake.pyfloat(left_digits=3,  right_digits=2, positive=True), 2),
+        "aircraft_id": aircraft_id
+    }
+
+    flight_creation = api_request(method="POST", path=FLIGHTS, json=flight_data)
+    flight_creation_status_code = flight_creation.status_code
+
+    yield flight_data, flight_creation_status_code
+
+    MAX_RETRIES = 3
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            flight_id = flight_creation.json().get("id")
+            api_request(method="DELETE", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+            get_flight_after_delete = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+            if get_flight_after_delete.status_code in (404, 422):
+                print("Flight deleted successfully")
+                break
+            else:
+                print (f"Flight still exists, status {get_flight_after_delete.status_code}, retrying delete")
+        except Exception as e:
+            print (f"Error during request {e}")
+    else:
+        raise Exception(f"Flight was not deleted after {MAX_RETRIES} attempts")
+

@@ -1,11 +1,10 @@
 from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from utils.config import get_product_url
-from utils.config import BASE_URL
-from utils.config import LOADING_OVERLAY
+from UI_project.utils.config import get_product_url
+from UI_project.utils.config import BASE_URL
+from UI_project.utils.config import LOADING_OVERLAY
 
 
 class ProductPage(BasePage):

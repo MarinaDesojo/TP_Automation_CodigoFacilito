@@ -12,7 +12,6 @@ from API_project.tests.flights.test_schema import flight_schema, flight_schema_a
 from API_project.tests.bookings.conftest import create_clear_booking
 from API_project.tests.payments.test_schema import bad_payment_amount_method_data
 
-
 @pytest.fixture
 def payment_data(create_clear_booking, auth_headers):
     booking_data, booking_creation_json = create_clear_booking
@@ -36,58 +35,7 @@ def create_payment(payment_data, auth_headers):
     return payment_data, payment_creation_status_code, payment_creation_json
 
 @pytest.fixture
-def create_payment_deleted_booking(payment_data, auth_headers):
-    api_request(method="DELETE", path=f"{BOOKINGS}/{payment_data['booking_id'], auth_headers}")
-    get_deleted_booking = api_request(method="GET", path=f"{BOOKINGS}/{payment_data['booking_id'], auth_headers}")
-    assert get_deleted_booking == 422, f"Expected 422, got {get_deleted_booking}, This suggests the API did not delete the booking ID, or failed to return the correct validation error."
-
-    payment_creation = api_request(method="POST", path=PAYMENTS, json=payment_data, headers=auth_headers)
-    payment_creation_status_code = payment_creation.status_code
-
-    return payment_data, payment_creation_status_code
-
-
-# @pytest.fixture
-# def create_payment_negative(create_clear_booking, auth_headers, params=bad_payment_data, ids=[f"case_{i}" for i in range(len(bad_payment_data))]):
-#     booking_data, booking_creation_json = create_clear_booking
-#     booking_id = booking_creation_json["id"]
-#
-#     bad_payment_data = {
-#         "booking_id": booking_id,
-#         "amount": 0,
-#         "payment_method": ""
-#     }
-#
-#     return request.param
-
-
-
-# @pytest.fixture
-# def create_payment_fail_negative_flow(bad_payment_data, auth_headers):
-#     payment_creation = api_request(method="POST", path=PAYMENTS, json=bad_payment_data, headers=auth_headers)
-#     payment_creation_status_code = payment_creation.status_code
-#     payment_creation_json = payment_creation.json()
-#     return bad_payment_data, payment_creation_status_code, payment_creation_json
-
-# @pytest.fixture
-# def create_payment_negative(create_clear_booking, auth_headers):
-#     booking_data, booking_creation_json = create_clear_booking
-#     booking_id = booking_creation_json["id"]
-#
-#     bad_payment_data = {
-#         "booking_id": booking_id,
-#         "amount": bad_payment_amount_method["amount"],
-#         "payment_method": bad_payment_amount_method["payment_method"]
-#     }
-#
-#     payment_creation = api_request(method="POST", path=PAYMENTS, json=bad_payment_data, headers=auth_headers)
-#     bad_payment_creation_json = payment_creation.json()
-#     bad_payment_creation_status_code = payment_creation.status_code
-#
-#     return bad_payment_creation_status_code, bad_payment_creation_json
-
-@pytest.fixture
-def create_payment_negative(create_clear_booking, auth_headers):
+def create_payment_negative(create_clear_booking, bad_payment_amount_method_data, auth_headers):
     booking_data, booking_creation_json = create_clear_booking
     booking_id = booking_creation_json["id"]
 
@@ -99,104 +47,20 @@ def create_payment_negative(create_clear_booking, auth_headers):
 
     return bad_payment_data
 
+@pytest.fixture
+def create_payment_deleted_booking(payment_data, auth_headers):
+    api_request(method="DELETE", path=f"{BOOKINGS}/{payment_data['booking_id'], auth_headers}")
+    get_deleted_booking = api_request(method="GET", path=f"{BOOKINGS}/{payment_data['booking_id'], auth_headers}")
+    assert get_deleted_booking == 422, f"Expected 422, got {get_deleted_booking}, This suggests the API did not delete the booking ID, or failed to return the correct validation error."
 
+    payment_creation = api_request(method="POST", path=PAYMENTS, json=payment_data, headers=auth_headers)
+    payment_creation_status_code = payment_creation.status_code
 
-    #
-    # booking_id = booking_creation_json["id"]
-    # MAX_RETRIES = 3
-    # for attempt in range(1, MAX_RETRIES + 1):
-    #     try:
-    #         api_request(method="DELETE", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
-    #         get_booking_after_delete = api_request(method="GET", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
-    #         if get_booking_after_delete.status_code in (404, 422):
-    #             print("Booking deleted successfully")
-    #             break
-    #         else:
-    #             print (f"Booking code {booking_id} still exists, get status {get_booking_after_delete.status_code}, retrying delete")
-    #     except Exception as e:
-    #         print (f"Error during request {e}")
-    # else:
-    #     raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
-#
-#
-# @pytest.fixture(params=bad_booking_passenger_data, ids=[f"case_{i}" for i in range(len(bad_booking_passenger_data))])
-# def bad_passenger_data(request):
-#     return request.param
-#
+    return payment_data, payment_creation_status_code
 
-# @pytest.fixture
-# def create_clear_booking_negative(create_clear_flight, bad_passenger_data, auth_headers):
-#     flight_data, flight_creation_json = create_clear_flight
-#     flight_id = flight_creation_json["id"]
-#
-#     bad_booking_data = {
-#         "flight_id": flight_id,
-#         "passengers": bad_passenger_data,
-#         "additionalProperties": False
-#     }
-#
-#     booking_creation = api_request(method="POST", path=BOOKINGS, json=bad_booking_data, headers=auth_headers)
-#     booking_creation_json = booking_creation.json()
-#     bad_booking_creation_status_code = booking_creation.status_code
-#
-#     return bad_booking_data, bad_booking_creation_status_code, booking_creation_json
-    # yield bad_booking_data, bad_booking_creation_status_code, booking_creation_json
-#
-#     booking_id = booking_creation_json["id"]
-#     MAX_RETRIES = 3
-#     for attempt in range(1, MAX_RETRIES + 1):
-#         try:
-#             api_request(method="DELETE", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
-#             get_booking_after_delete = api_request(method="GET", path=f"{BOOKINGS}/{booking_id}", headers=auth_headers)
-#             if get_booking_after_delete.status_code in (404, 422):
-#                 print("Booking deleted successfully")
-#                 break
-#             else:
-#                 print (f"Booking code {booking_id} still exists, get status {get_booking_after_delete.status_code}, retrying delete")
-#         except Exception as e:
-#             print (f"Error during request {e}")
-#     else:
-#         raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
-#
-#
-# @pytest.fixture
-# def get_all_bookings(auth_headers, limit=50):
-#     skip = 0
-#     results = []
-#     while True:
-#         r = api_request(method="GET", path=BOOKINGS, headers=auth_headers, params={"skip": skip, "limit": limit})
-#         r.raise_for_status()
-#         flights_list = r.json()
-#         if not flights_list:
-#             break
-#         results.extend(flights_list)
-#         skip += limit
-#     return results
-#
-#
-# @pytest.fixture
-# def bookings_variable_path_teardown(create_clear_flight, passenger_data, auth_headers):
-#     flight_data, flight_creation_json = create_clear_flight
-#     flight_id = flight_creation_json["id"]
-#
-#     resources = []
-#     yield resources, flight_id
-#     MAX_RETRIES = 3
-#     for resource in resources:
-#         path = resource["path"]
-#         verify_path = resource.get("verify_path", path)
-#         for attempt in range(1, MAX_RETRIES + 1):
-#             try:
-#                 api_request(method="DELETE", path=path, headers=auth_headers)
-#                 get_response_after_delete = api_request(method="GET", path=verify_path, headers=auth_headers)
-#                 if get_response_after_delete.status_code in (404, 422):
-#                     print(f"Resource at {path} deleted successfully")
-#                     break
-#                 else:
-#                     print(f"Resource at {path} still exists, status {get_response_after_delete.status_code}, retrying delete")
-#             except Exception as e:
-#                 print(f"Error during request {e}")
-#         else:
-#             raise Exception(f"Resource at {path} was not deleted after {MAX_RETRIES} attempts")
+@pytest.fixture
+def create_payment_fail_not_authenticated(payment_data, auth_headers):
+    payment_creation = api_request(method="POST", path=PAYMENTS, json=payment_data)
+    payment_creation_status_code = payment_creation.status_code
 
-
+    return payment_creation_status_code

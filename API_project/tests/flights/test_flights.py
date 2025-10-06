@@ -12,6 +12,8 @@ from API_project.tests.airports.test_schema import good_airport_data_1, good_air
 from API_project.tests.aircrafts.test_schema import good_aircraft_data
 from API_project.tests.flights.test_schema import flight_schema, flight_schema_array, random_flight_data, bad_flight_scenarios
 
+@pytest.mark.api
+@pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_create_clear_flight(create_clear_flight, auth_headers):
     flight_data, flight_creation_json = create_clear_flight
@@ -27,13 +29,58 @@ def test_create_clear_flight(create_clear_flight, auth_headers):
     check.equal(flight['base_price'], flight_data['base_price'], "Base price mismatch")
     check.equal(flight['aircraft_id'], flight_data['aircraft_id'], "Aircraft id mismatch")
 
+@pytest.mark.api
+@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
+def test_update_flight(create_clear_flight, auth_headers):
+    flight_data, flight_creation_json = create_clear_flight
+    flight_id = flight_creation_json["id"]
+
+    departure = fake.date_time(tzinfo=datetime.timezone.utc)
+    arrival = departure + datetime.timedelta(hours=5)
+
+    changed_flight_data = {
+        "origin": flight_data['destination'],
+        "destination": flight_data['origin'],
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
+        "base_price": 5000,
+        "aircraft_id": flight_data['aircraft_id']
+    }
+
+    update_flight = api_request(method="PUT", path=f"{FLIGHTS}/{flight_id}", json=changed_flight_data, headers=auth_headers)
+    update_flight.raise_for_status()
+
+    get_updated_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
+    updated_flight_json = get_updated_flight.json()
+    check.equal(updated_flight_json['origin'], changed_flight_data['origin'], "Origin iata code mismatch")
+    check.equal(updated_flight_json['destination'], changed_flight_data['destination'], "Destination iata code mismatch")
+    check.equal(updated_flight_json['departure_time'], changed_flight_data['departure_time'], "Departure time mismatch")
+    check.equal(updated_flight_json['arrival_time'], changed_flight_data['arrival_time'], "Arrival time mismatch")
+    check.equal(updated_flight_json['base_price'], changed_flight_data['base_price'], "Base price mismatch")
+    check.equal(updated_flight_json['aircraft_id'], changed_flight_data['aircraft_id'], "Aircraft id mismatch")
+
+@pytest.mark.api
+@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
+def test_get_all_flights(create_clear_flight, get_all_flights, auth_headers):
+    validate(instance=get_all_flights, schema=flight_schema_array)
+
+@pytest.mark.api
+@pytest.mark.fail
+@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
+def test_double_create_clear_flight(create_clear_flight, auth_headers):
+    flight_data, flight_creation_json = create_clear_flight
+    flight_double_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
+    assert flight_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {flight_double_creation.status_code}"
+
+@pytest.mark.api
+@pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
 @pytest.mark.parametrize('airport_data_2', [good_airport_data_2])
 @pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
 @pytest.mark.parametrize('bad_flight_scenarios', bad_flight_scenarios)
 def test_create_clear_flight_fail_negative_flow(create_clear_flight_negative, auth_headers):
     bad_flight_data, bad_flight_creation_status_code, flight_creation_json = create_clear_flight_negative
-    assert bad_flight_creation_status_code in (400, 422), f"Expected 400 or 422, got {bad_flight_creation_status_code}"
+    assert bad_flight_creation_status_code in (400, 422), f"Expected 400 or 422, got {bad_flight_creation_status_code}, for {bad_flight_data}. This suggests the API accepted flight data with non valid or missing data, or failed to return the correct validation error."
 
     flight_id = flight_creation_json.get('id')
     if flight_id:
@@ -43,68 +90,12 @@ def test_create_clear_flight_fail_negative_flow(create_clear_flight_negative, au
             if aircraft.get('id') == flight_id:
                 print(f"Warning, aircraft was created despite of {bad_flight_creation_status_code} for: {flight_id}")
 
-                delete_resp = api_request(method="DELETE", path=f"{FLIGHTS}/{flight_id}",
-                                          headers=auth_headers)
+                delete_resp = api_request(method="DELETE", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
                 if delete_resp.status_code != 204:
                     print(f"Warning: Failed to delete airport {flight_id}")
 
-
-
-@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
-def test_double_create_clear_flight(create_clear_flight, auth_headers):
-    flight_data, flight_creation_json = create_clear_flight
-    # validate(instance=flight_creation_json, schema=flight_schema)
-    # flight_id = flight_creation_json["id"]
-    #
-    # get_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
-    # flight = get_flight.json()
-    # check.equal(flight['origin'], flight_data['origin'], "Origin iata code mismatch")
-    # check.equal(flight['destination'], flight_data['destination'], "Destination iata code mismatch")
-    # check.equal(flight['departure_time'], flight_data['departure_time'], "Departure time mismatch")
-    # check.equal(flight['arrival_time'], flight_data['arrival_time'], "Arrival time mismatch")
-    # check.equal(flight['base_price'], flight_data['base_price'], "Base price mismatch")
-    # check.equal(flight['aircraft_id'], flight_data['aircraft_id'], "Aircraft id mismatch")
-
-    flight_double_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
-    assert flight_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {flight_double_creation.status_code}"
-
-
-@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
-def test_update_flight(create_clear_flight, auth_headers):
-    flight_data, flight_creation_json = create_clear_flight
-    flight_id = flight_creation_json["id"]
-
-    departure = fake.date_time(tzinfo=datetime.timezone.utc)
-    arrival = departure + datetime.timedelta(hours=5)
-
-    chagend_flight_data = {
-        "origin": flight_data['destination'],
-        "destination": flight_data['origin'],
-        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
-        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
-        "base_price": 5000,
-        "aircraft_id": flight_data['aircraft_id']
-    }
-
-    update_flight = api_request(method="PUT", path=f"{FLIGHTS}/{flight_id}", json=chagend_flight_data, headers=auth_headers)
-    update_flight.raise_for_status()
-
-    get_updated_flight = api_request(method="GET", path=f"{FLIGHTS}/{flight_id}", headers=auth_headers)
-    updated_flight_json = get_updated_flight.json()
-    check.equal(updated_flight_json['origin'], chagend_flight_data['origin'], "Origin iata code mismatch")
-    check.equal(updated_flight_json['destination'], chagend_flight_data['destination'], "Destination iata code mismatch")
-    check.equal(updated_flight_json['departure_time'], chagend_flight_data['departure_time'], "Departure time mismatch")
-    check.equal(updated_flight_json['arrival_time'], chagend_flight_data['arrival_time'], "Arrival time mismatch")
-    check.equal(updated_flight_json['base_price'], chagend_flight_data['base_price'], "Base price mismatch")
-    check.equal(updated_flight_json['aircraft_id'], chagend_flight_data['aircraft_id'], "Aircraft id mismatch")
-
-
-@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
-@pytest.mark.order(35)
-def test_get_all_flights(create_clear_flight, get_all_flights, auth_headers):
-    validate(instance=get_all_flights, schema=flight_schema_array)
-
-
+@pytest.mark.api
+@pytest.mark.fail
 def test_flight_deleted_data_origin(flight_variable_path_teardown, auth_headers):
     api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
     origin = good_airport_data_1['iata_code']
@@ -138,10 +129,44 @@ def test_flight_deleted_data_origin(flight_variable_path_teardown, auth_headers)
     flight_id = flight_creation_json["id"]
     flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
 
-    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}, which means the flight was created despite using an origin which is not on the database"
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing origin data, or failed to return the correct validation error."
 
+@pytest.mark.api
+@pytest.mark.fail
+def test_flight_empty_data_origin(flight_variable_path_teardown, auth_headers):
+    api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_2['iata_code']}", headers=auth_headers, json=good_airport_data_2)
+    api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_2)
+    destination = good_airport_data_2['iata_code']
 
+    flight_variable_path_teardown.append({"path": f"{AIRPORTS}/{destination}"})
 
+    aircraft = api_request(method="POST", path=AIRCRAFTS, headers=auth_headers, json=good_aircraft_data)
+    aircraft_json = aircraft.json()
+    aircraft_id = aircraft_json["id"]
+
+    flight_variable_path_teardown.append({"path": f"{AIRCRAFTS}/{aircraft_id}"})
+
+    departure = fake.date_time(tzinfo=datetime.timezone.utc)
+    arrival = departure + datetime.timedelta(hours=5)
+
+    flight_data = {
+        "origin": "",
+        "destination": destination,
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
+        "base_price": round(fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2),
+        "aircraft_id": aircraft_id
+    }
+
+    flight_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
+    flight_creation_json = flight_creation.json()
+    flight_id = flight_creation_json["id"]
+    flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
+
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty origin data, or failed to return the correct validation error."
+
+@pytest.mark.api
+@pytest.mark.fail
 def test_flight_deleted_data_destination(flight_variable_path_teardown, auth_headers):
     api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
     api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_1)
@@ -175,10 +200,44 @@ def test_flight_deleted_data_destination(flight_variable_path_teardown, auth_hea
     flight_id = flight_creation_json["id"]
     flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
 
-    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}, which means the flight was created despite using a destination which is not on the database"
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing destination data, or failed to return the correct validation error."
 
+@pytest.mark.api
+@pytest.mark.fail
+def test_flight_empty_data_destination(flight_variable_path_teardown, auth_headers):
+    api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
+    api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_1)
+    origin = good_airport_data_1['iata_code']
 
+    flight_variable_path_teardown.append({"path": f"{AIRPORTS}/{origin}"})
 
+    aircraft = api_request(method="POST", path=AIRCRAFTS, headers=auth_headers, json=good_aircraft_data)
+    aircraft_json = aircraft.json()
+    aircraft_id = aircraft_json["id"]
+
+    flight_variable_path_teardown.append({"path": f"{AIRCRAFTS}/{aircraft_id}"})
+
+    departure = fake.date_time(tzinfo=datetime.timezone.utc)
+    arrival = departure + datetime.timedelta(hours=5)
+
+    flight_data = {
+        "origin": origin,
+        "destination": "",
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
+        "base_price": round(fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2),
+        "aircraft_id": aircraft_id
+    }
+
+    flight_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
+    flight_creation_json = flight_creation.json()
+    flight_id = flight_creation_json["id"]
+    flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
+
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty destination data, or failed to return the correct validation error."
+
+@pytest.mark.api
+@pytest.mark.fail
 def test_flight_deleted_data_aircraft(flight_variable_path_teardown, auth_headers):
     api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
     api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_1)
@@ -214,10 +273,44 @@ def test_flight_deleted_data_aircraft(flight_variable_path_teardown, auth_header
     flight_id = flight_creation_json["id"]
     flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
 
-    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}, which means the flight was created despite using an aircraft which is not on the database"
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing aircraft data, or failed to return the correct validation error."
 
+@pytest.mark.api
+@pytest.mark.fail
+def test_flight_empty_data_aircraft(flight_variable_path_teardown, auth_headers):
+    api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
+    api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_1)
+    origin = good_airport_data_1['iata_code']
 
+    flight_variable_path_teardown.append({"path": f"{AIRPORTS}/{origin}"})
 
+    api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_2['iata_code']}", headers=auth_headers, json=good_airport_data_2)
+    api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_2)
+    destination = good_airport_data_2['iata_code']
+
+    flight_variable_path_teardown.append({"path": f"{AIRPORTS}/{destination}"})
+
+    departure = fake.date_time(tzinfo=datetime.timezone.utc)
+    arrival = departure + datetime.timedelta(hours=5)
+
+    flight_data = {
+        "origin": origin,
+        "destination": destination,
+        "departure_time": departure.isoformat().replace('+00:00', 'Z'),
+        "arrival_time": arrival.isoformat().replace('+00:00', 'Z'),
+        "base_price": round(fake.pyfloat(left_digits=3, right_digits=2, positive=True), 2),
+        "aircraft_id": ""
+    }
+
+    flight_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
+    flight_creation_json = flight_creation.json()
+    flight_id = flight_creation_json["id"]
+    flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
+
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty aircraft data, or failed to return the correct validation error."
+
+@pytest.mark.api
+@pytest.mark.fail
 def test_flight_same_origin_destination_data(flight_variable_path_teardown, auth_headers):
     api_request(method="DELETE", path=f"{AIRPORTS}/{good_airport_data_1['iata_code']}", headers=auth_headers, json=good_airport_data_1)
     api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=good_airport_data_1)
@@ -248,6 +341,11 @@ def test_flight_same_origin_destination_data(flight_variable_path_teardown, auth
     flight_id = flight_creation_json["id"]
     flight_variable_path_teardown.append({"path": f"{FLIGHTS}/{flight_id}"})
 
-    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}, which means the flight was created despite using same origin and destination data"
+    assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation with same origin and destination airport data, or failed to return the correct validation error."
 
-
+@pytest.mark.api
+@pytest.mark.fail
+@pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
+def test_create_clear_flight_not_authenticated(create_clear_flight_fail_not_authenticated):
+    flight_data, flight_creation_status_code = create_clear_flight_fail_not_authenticated
+    assert flight_creation_status_code in (401, 403), f"Expected 401 or 403, got {flight_creation_status_code}. This suggests the API accepted a flight creation request without authentication, or failed to return the correct validation error."

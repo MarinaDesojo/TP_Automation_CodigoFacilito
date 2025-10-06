@@ -14,29 +14,10 @@ payment_schema = {
     "additionalProperties": False
 }
 
-
 payment_schema_array = {
     "type": "array",
     "items": payment_schema
 }
-
-good_payment_data = [{
-    "full_name": "Pepe",
-    "passport": "ASD6513513",
-    "seat": "57F"
-}]
-
-random_payment_data = [
-    {
-        "full_name": fake.name(),
-        "passport": fake.bothify(text='??######'),
-        "seat": f"{random.randint(1, 60)}{random.choice(['A', 'B', 'C', 'D', 'E', 'F'])}"
-    },{
-        "full_name": fake.name(),
-        "passport": fake.bothify(text='??######'),
-        "seat": None
-    }
-]
 
 bad_payment_amount_method_data = [
     {
@@ -62,25 +43,5 @@ bad_payment_amount_method_data = [
     {
         "amount": "",
         "payment_method": "card"
-    }#,
-    # {
-    #     "amount": 0,
-    #     "payment_method": ""
-    # },
-    # {
-    #     "amount": 0,
-    #     "payment_method": ""
-    # },
-    # {
-    #     "amount": 0,
-    #     "payment_method": ""
-    # },
-    # {
-    #     "amount": 0,
-    #     "payment_method": ""
-    # },
-    # {
-    #     "amount": 0,
-    #     "payment_method": ""
-    # }
+    }
 ]

@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from utils.config import URLS
+from UI_project.utils.config import URLS
 from selenium.common.exceptions import NoSuchElementException
 
 

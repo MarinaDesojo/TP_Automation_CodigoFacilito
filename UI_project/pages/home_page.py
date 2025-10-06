@@ -3,8 +3,8 @@ from selenium.webdriver.common.by import (By)
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-from utils.config import URLS
-from utils.config import LOADING_OVERLAY
+from UI_project.utils.config import URLS
+from UI_project.utils.config import LOADING_OVERLAY
 
 class HomePage(BasePage):
     # Main - Carousel controls

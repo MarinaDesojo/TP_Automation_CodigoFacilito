@@ -1,7 +1,7 @@
 from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
-from utils.config import URLS
-from utils.config import LOADING_OVERLAY
+from UI_project.utils.config import URLS
+from UI_project.utils.config import LOADING_OVERLAY
 
 class CheckoutPage(BasePage):
     # Main
