@@ -1,16 +1,16 @@
 import time
 import pytest
 #page objects
-from pages.books_page import BooksPage
-from pages.cart_page import CartPage
-from pages.electronics_page import ElectronicsPage
-from pages.groceries_page import GroceriesPage
-from pages.header_page import HeaderPage
-from pages.home_page import HomePage
-from pages.menclothes_page import MenClothesPage
-from pages.product_detail_page import ProductPage
-from pages.womenclothes_page import WomenClothesPage
-from conftest import driver
+from UI_project.pages.books_page import BooksPage
+from UI_project.pages.cart_page import CartPage
+from UI_project.pages.electronics_page import ElectronicsPage
+from UI_project.pages.groceries_page import GroceriesPage
+from UI_project.pages.header_page import HeaderPage
+from UI_project.pages.home_page import HomePage
+from UI_project.pages.menclothes_page import MenClothesPage
+from UI_project.pages.product_detail_page import ProductPage
+from UI_project.pages.womenclothes_page import WomenClothesPage
+from UI_project.conftest import driver
 
 
 @pytest.mark.search

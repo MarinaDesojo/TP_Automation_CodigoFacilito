@@ -1,13 +1,13 @@
 from .base_page import BasePage
 from selenium.webdriver.common.by import (By)
-from utils.config import URLS
-from utils.config import LOADING_OVERLAY
+from UI_project.utils.config import URLS
+from UI_project.utils.config import LOADING_OVERLAY
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pytest
 import os
 
-class BooksPage(BasePage):
+class ElectronicsPage(BasePage):
     # Header
     TEXT_CART_BADGE = (By.CSS_SELECTOR, 'a[href="/cart"] button > div.rounded-full.absolute')
     # Main
@@ -15,21 +15,21 @@ class BooksPage(BasePage):
     TEXT_CATEGORY_DESCRIPTION = (By.ID, "category-description")
 
     def load(self):
-        self.driver.get(URLS["books"])
-        self.assert_url("books")
+        self.driver.get(URLS["electronics"])
+        self.assert_url("electronics")
         self.wait_until_invisible(LOADING_OVERLAY)
 
-    def go_to_product_page_by_number_31_40(self, product_number: str):
-        if not product_number.isdigit() or not (31 <= int(product_number) <= 40):
-            raise ValueError("product_number has to be between '31' and '40'")
+    def go_to_product_page_by_number_21_30(self, product_number: str):
+        if not product_number.isdigit() or not (21 <= int(product_number) <= 30):
+            raise ValueError("product_number has to be between '21' and '30'")
         product_detail_link = (By.CSS_SELECTOR, f'[href="/product/{product_number}"]')
         self.click(product_detail_link)
         self.wait_until_invisible(LOADING_OVERLAY)
 
-    def verify_all_view_details_links_by_number_31_40(self):
+    def verify_all_view_details_links_by_number_21_30(self):
         errors = []
 
-        for product_number in range(31, 41):
+        for product_number in range(21, 31):
             product_id = str(product_number)
 
             try:
@@ -54,8 +54,8 @@ class BooksPage(BasePage):
                 errors.append(f"Product number {product_id} ('{name}'): {e}")
 
             finally:
-                self.driver.get(URLS["books"])
-                self.assert_url("books")
+                self.driver.get(URLS["electronics"])
+                self.assert_url("electronics")
                 self.wait_until_invisible(LOADING_OVERLAY)
 
         if errors:
@@ -63,34 +63,38 @@ class BooksPage(BasePage):
                 "\nErrors were found when verifying 'View Details' links:\n" + "\n".join(errors)
             )
 
-    def add_product_to_cart_by_number_31_40(self, product_number: str):
-        if not product_number.isdigit() or not (31 <= int(product_number) <= 40):
-            raise ValueError("product_number has to be between '31' and '40'")
+    def add_product_to_cart_by_number_21_30(self, product_number: str):
+        if not product_number.isdigit() or not (21 <= int(product_number) <= 30):
+            raise ValueError("product_number has to be between '21' and '30'")
         add_button = (By.ID, f"add-to-cart-{product_number}")
         self.click(add_button)
 
-    def add_products_31_to_40_to_cart(self):
+    def add_products_21_to_30_to_cart(self):
         errors = []
         cart_expected = 0
 
-        for product_number in range(31, 41):
+        for product_number in range(21, 31):
             cart_expected += 1
             try:
                 product_id_str = str(product_number)
+                # Obtener el nombre del producto
                 name_locator = (By.ID, f"product-name-{product_id_str}")
                 product_name = self.text_of_element(name_locator).strip()
 
-                self.add_product_to_cart_by_number_31_40(product_id_str)
+                # Agregar el producto
+                self.add_product_to_cart_by_number_21_30(product_id_str)
 
+                # Verificar el cart badge
                 current_badge = int(self.text_of_element(self.TEXT_CART_BADGE))
                 if current_badge != cart_expected:
                     errors.append(
                         f"Product {product_number} ('{product_name}'): "
                         f"Expected cart badge to show {cart_expected}, but got {current_badge}"
                     )
-                    cart_expected = current_badge
+                    cart_expected = current_badge  # Ajustar para mantener sincronía
 
             except Exception as e:
+                # Si falla el click o el nombre, capturar lo que se pueda
                 name = product_name if 'product_name' in locals() else 'Unknown'
                 errors.append(f"Product {product_number} ('{name}'): {e}")
 
@@ -130,10 +134,10 @@ class BooksPage(BasePage):
                 product_id = actions_container.get_attribute("id").split("-")[-1]
             except Exception:
                 product_id = f"desconocido_{index}"
-
+            # Buscar el contenedor padre con id 'product-content-{id}'
             try:
                 parent_container = actions_container.find_element(By.XPATH,
-                                                                  f"../..")
+                                                                  f"../..")  # dos niveles arriba para llegar a product-content-31
                 product_name_el = parent_container.find_element(By.CLASS_NAME, "product-name")
                 product_name = product_name_el.text.strip()
             except Exception:

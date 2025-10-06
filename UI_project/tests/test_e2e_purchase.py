@@ -1,17 +1,19 @@
 import pytest
 #page objects
-from pages.login_page import LoginPage
-from pages.signup_page import SignUpPage
-from pages.cart_page import CartPage
-from pages.checkout_page import CheckoutPage
-from pages.confirmation_page import ConfirmationPage
-from pages.electronics_page import ElectronicsPage
-from pages.header_page import HeaderPage
-from pages.home_page import HomePage
-from pages.menclothes_page import MenClothesPage
-from pages.product_detail_page import ProductPage
-from conftest import driver
-from utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
+from UI_project.pages.login_page import LoginPage
+from UI_project.pages.signup_page import SignUpPage
+from UI_project.pages.cart_page import CartPage
+from UI_project.pages.checkout_page import CheckoutPage
+from UI_project.pages.confirmation_page import ConfirmationPage
+from UI_project.pages.electronics_page import ElectronicsPage
+from UI_project.pages.header_page import HeaderPage
+from UI_project.pages.home_page import HomePage
+from UI_project.pages.menclothes_page import MenClothesPage
+from UI_project.pages.product_detail_page import ProductPage
+from UI_project.conftest import driver
+from UI_project.utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
+
+
 
 @pytest.mark.e2e
 @pytest.mark.shop
