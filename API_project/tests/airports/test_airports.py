@@ -12,7 +12,7 @@ from API_project.utils.settings import AIRPORTS
 
 @pytest.mark.airports
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
 def test_create_clear_airport_new_1(create_clear_airport_1, airport_data_1):
     validate(instance=create_clear_airport_1, schema=airport_schema)
