@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI content verification Tests
 run-name: UI content verification tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI shop Tests
 run-name: UI shop tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

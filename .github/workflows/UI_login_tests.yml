@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI login Tests
 run-name: UI login tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

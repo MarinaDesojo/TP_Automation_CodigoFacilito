@@ -1,12 +1,9 @@
-name: Run Tests
+name: Run UI all tests Chrome
 run-name: UI all tests Chrome browser
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   pyton-unit-tests:
     runs-on: ubuntu-latest

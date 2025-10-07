@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run API negative Tests
 run-name: API negative tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

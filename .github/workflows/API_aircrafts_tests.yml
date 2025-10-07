@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run API Aircrafts Tests
 run-name: API Aircrafts endpoint tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

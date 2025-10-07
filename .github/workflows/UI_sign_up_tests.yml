@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI sign up Tests
 run-name: UI sign up tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

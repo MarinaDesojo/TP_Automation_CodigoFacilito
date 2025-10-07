@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run API User endpoint Tests
 run-name: API User endpoint tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

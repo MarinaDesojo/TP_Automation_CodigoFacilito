@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run API Bookings endpoint Tests
 run-name: API Bookings endpoint tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

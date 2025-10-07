@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI all tests Edge
 run-name: UI all tests Edge browser
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
