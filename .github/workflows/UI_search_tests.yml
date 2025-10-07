@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI search  Tests
 run-name: UI search tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

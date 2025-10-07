@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run API happy path Tests
 run-name: API happy path tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

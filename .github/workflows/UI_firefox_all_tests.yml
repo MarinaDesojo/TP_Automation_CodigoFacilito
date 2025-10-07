@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI all tests Firefox
 run-name: UI all tests Firefox browser
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 

@@ -1,9 +1,7 @@
-name: Run Tests
+name: Run UI end to end Tests
 run-name: UI end to end tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
