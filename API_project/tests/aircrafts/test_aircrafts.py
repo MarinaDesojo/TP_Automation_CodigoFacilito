@@ -8,7 +8,7 @@ from API_project.utils.api_helpers import api_request
 
 @pytest.mark.aircrafts
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('aircraft_data', [good_aircraft_data])
 def test_create_clear_aircraft_schema(create_clear_aircraft, aircraft_data):
     validate(instance=create_clear_aircraft, schema=aircraft_schema)

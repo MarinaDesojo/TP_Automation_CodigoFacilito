@@ -8,7 +8,7 @@ from API_project.utils.api_helpers import api_request
 
 @pytest.mark.users
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('user_data', [good_user_data])
 def test_create_clear_user_schema(create_clear_user, user_data):
     validate(instance=create_clear_user, schema=user_schema)

@@ -16,7 +16,7 @@ from API_project.tests.users.test_schema import good_user_data
 
 @pytest.mark.bookings
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_create_clear_booking(create_clear_booking, auth_headers):
     booking_data, booking_creation_json = create_clear_booking

@@ -14,7 +14,7 @@ from API_project.tests.flights.test_schema import flight_schema, flight_schema_a
 
 @pytest.mark.flights
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_create_clear_flight(create_clear_flight, auth_headers):
     flight_data, flight_creation_json = create_clear_flight

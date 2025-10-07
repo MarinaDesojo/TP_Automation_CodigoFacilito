@@ -16,7 +16,7 @@ from API_project.tests.payments.test_schema import bad_payment_amount_method_dat
 
 @pytest.mark.payments
 @pytest.mark.api
-@pytest.mark.happy_path_flow
+@pytest.mark.happy_path
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_create_get_payment(create_payment, auth_headers):
     payment_data, payment_creation_status_code, payment_creation_json = create_payment
