@@ -14,6 +14,7 @@ from API_project.tests.aircrafts.test_schema import good_aircraft_data
 from API_project.tests.bookings.test_schema import booking_schema, booking_schema_array, bad_booking_passenger_data, random_booking_passenger_data
 from API_project.tests.users.test_schema import good_user_data
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -31,6 +32,7 @@ def test_create_clear_booking(create_clear_booking, auth_headers):
         check.equal(passenger["passport"], passenger_data["passport"], f"Passport mismatch for passenger {i}")
         check.equal(passenger["seat"], passenger_data["seat"], f"Seat mismatch for passenger {i}")
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_update_booking(create_clear_booking, auth_headers):
@@ -61,11 +63,13 @@ def test_update_booking(create_clear_booking, auth_headers):
         check.equal(passenger["passport"], passenger_data["passport"], f"Passport mismatch for passenger {i}")
         check.equal(passenger["seat"], passenger_data["seat"], f"Seat mismatch for passenger {i}")
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_get_all_bookings(create_clear_booking, get_all_bookings, auth_headers):
     validate(instance=get_all_bookings, schema=booking_schema_array)
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -75,6 +79,7 @@ def test_double_create_clear_booking(create_clear_booking, auth_headers):
     booking_double_creation = api_request(method="POST", path=BOOKINGS, json=booking_data, headers=auth_headers)
     assert booking_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {booking_double_creation.status_code}"
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -95,6 +100,7 @@ def test_create_clear_booking_fail_negative_flow(create_clear_booking_negative, 
             if delete_resp.status_code != 204:
                 print(f"Warning: Failed to delete booking {booking_id}")
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -116,6 +122,7 @@ def test_booking_deleted_data_flight(passenger_data, bookings_variable_path_tear
     assert booking_creation.status_code == 422, f"Expected 422, got {booking_creation.status_code}. This suggests the API accepted a booking with a non-existent flight ID, or failed to return the correct validation error."
 
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -136,6 +143,7 @@ def test_booking_empty_data_flight(passenger_data, bookings_variable_path_teardo
     assert booking_creation.status_code == 422, f"Expected 422, got {booking_creation.status_code}. This suggests the API accepted a booking with an empty flight ID, or failed to return the correct validation error."
 
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -156,6 +164,7 @@ def test_booking_empty_data_passenger(bookings_variable_path_teardown, auth_head
     assert booking_creation.status_code == 422, f"Expected 422, got {booking_creation.status_code}. This suggests the API accepted a booking with an empty list of passengers, or failed to return the correct validation error."
 
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -175,6 +184,7 @@ def test_booking_string_data_passenger(bookings_variable_path_teardown, auth_hea
         booking_id = booking_creation_json["id"]
         resources.append({"path": f"{BOOKINGS}/{booking_id}"})
 
+@pytest.mark.bookings
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])

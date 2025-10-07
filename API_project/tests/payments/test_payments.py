@@ -14,6 +14,7 @@ from API_project.tests.aircrafts.test_schema import good_aircraft_data
 from API_project.tests.bookings.test_schema import booking_schema, booking_schema_array, bad_booking_passenger_data, random_booking_passenger_data
 from API_project.tests.payments.test_schema import bad_payment_amount_method_data, payment_schema, payment_schema_array
 
+@pytest.mark.payments
 @pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -29,6 +30,7 @@ def test_create_get_payment(create_payment, auth_headers):
     assert "id" in get_payment_json
     assert "status" in get_payment_json
 
+@pytest.mark.payments
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
@@ -42,6 +44,7 @@ def test_create_payment_fail_negative_flow(create_payment_negative, auth_headers
 
     assert bad_payment_creation_status_code in (400, 422), f"Expected 400 or 422, got {bad_payment_creation_status_code}, for payment data {create_payment_negative}. This suggests the API accepted payment data with non valid or missing data, or failed to return the correct validation error."
 
+@pytest.mark.payments
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -49,6 +52,7 @@ def test_create_get_payment_deleted_booking(create_payment_deleted_booking, auth
     payment_data, payment_creation_status_code = create_payment_deleted_booking
     assert payment_creation_status_code == 422, f"Expected 422, got {payment_creation_status_code}. This suggests the API accepted a payment with a non-existent booking ID, or failed to return the correct validation error."
 
+@pytest.mark.payments
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data', [(good_airport_data_1, good_airport_data_2, good_aircraft_data)])

@@ -14,8 +14,9 @@ from UI_project.conftest import driver
 from UI_project.utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE, PHONE_NUMBER, ADDRESS, CITY, COUNTRY
 
 
-
+@pytest.mark.web
 @pytest.mark.e2e
+@pytest.mark.happy_path
 @pytest.mark.shop
 def test_shop_e2e(driver):
     signup = SignUpPage(driver)

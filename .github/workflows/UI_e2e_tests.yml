@@ -1,5 +1,5 @@
 name: Run Tests
-run-name: API and UI tests
+run-name: UI end to end tests
 
 on:
   push:
@@ -32,5 +32,4 @@ jobs:
       env:
         PYTHONPATH: ${{ github.workspace }}
       run: |
-        pytest UI_project/tests --headless --browser=chrome
-        pytest API_project/tests -m api
+        pytest -m "web and e2e" --headless --browser=chrome
