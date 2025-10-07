@@ -6,12 +6,14 @@ from API_project.tests.users.test_schema import user_schema, changed_user_data, 
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.api_helpers import api_request
 
+@pytest.mark.users
 @pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('user_data', [good_user_data])
 def test_create_clear_user_schema(create_clear_user, user_data):
     validate(instance=create_clear_user, schema=user_schema)
 
+@pytest.mark.users
 @pytest.mark.api
 @pytest.mark.parametrize('user_data, user_data_new',[(good_user_data, changed_user_data)])
 def test_update_user_values(create_clear_user, user_data, user_data_new, auth_headers):
@@ -36,14 +38,17 @@ def test_update_user_values(create_clear_user, user_data, user_data_new, auth_he
         for user in users)
     check.is_true(found_role, f"User with updated role not found: {target_role}")
 
+@pytest.mark.users
 @pytest.mark.api
 def test_get_user_me(get_user):
     assert get_user.status_code == 200, f"Expected 200, got {get_user.status_code}"
 
+@pytest.mark.users
 @pytest.mark.api
 def test_get_all_users_schema(get_all_users):
     validate(instance=get_all_users, schema=user_schema_array)
 
+@pytest.mark.users
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('user_data', [good_user_data])
@@ -51,6 +56,7 @@ def test_double_create(create_clear_user, user_data, auth_headers):
     r = api_request(method="POST", path=USERS, data=user_data, headers=auth_headers)
     assert r.status_code in (409, 422), f"Expected 400, 409 or 422, but got {r.status_code}: {r.text} This suggests the API accepted a user creation request with the same data than an already existing user, or failed to return the correct validation error."
 
+@pytest.mark.users
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('user_data', bad_user_data)
@@ -71,6 +77,7 @@ def test_create_clear_user_fail_negative_flow(create_clear_user_negative_test, u
                 if delete_resp.status_code != 204:
                     print(f"Warning: Failed to delete user {user['id']} with email {email}")
 
+@pytest.mark.users
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('user_data', [good_user_data])

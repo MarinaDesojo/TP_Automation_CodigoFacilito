@@ -12,6 +12,7 @@ from API_project.tests.airports.test_schema import good_airport_data_1, good_air
 from API_project.tests.aircrafts.test_schema import good_aircraft_data
 from API_project.tests.flights.test_schema import flight_schema, flight_schema_array, random_flight_data, bad_flight_scenarios
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -29,6 +30,7 @@ def test_create_clear_flight(create_clear_flight, auth_headers):
     check.equal(flight['base_price'], flight_data['base_price'], "Base price mismatch")
     check.equal(flight['aircraft_id'], flight_data['aircraft_id'], "Aircraft id mismatch")
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_update_flight(create_clear_flight, auth_headers):
@@ -59,11 +61,13 @@ def test_update_flight(create_clear_flight, auth_headers):
     check.equal(updated_flight_json['base_price'], changed_flight_data['base_price'], "Base price mismatch")
     check.equal(updated_flight_json['aircraft_id'], changed_flight_data['aircraft_id'], "Aircraft id mismatch")
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
 def test_get_all_flights(create_clear_flight, get_all_flights, auth_headers):
     validate(instance=get_all_flights, schema=flight_schema_array)
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])
@@ -72,6 +76,7 @@ def test_double_create_clear_flight(create_clear_flight, auth_headers):
     flight_double_creation = api_request(method="POST", path=FLIGHTS, json=flight_data, headers=auth_headers)
     assert flight_double_creation.status_code in (409, 422), f"Expected 409 or 422, got {flight_double_creation.status_code}"
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
@@ -94,6 +99,7 @@ def test_create_clear_flight_fail_negative_flow(create_clear_flight_negative, au
                 if delete_resp.status_code != 204:
                     print(f"Warning: Failed to delete airport {flight_id}")
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_deleted_data_origin(flight_variable_path_teardown, auth_headers):
@@ -131,6 +137,7 @@ def test_flight_deleted_data_origin(flight_variable_path_teardown, auth_headers)
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing origin data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_empty_data_origin(flight_variable_path_teardown, auth_headers):
@@ -165,6 +172,7 @@ def test_flight_empty_data_origin(flight_variable_path_teardown, auth_headers):
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty origin data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_deleted_data_destination(flight_variable_path_teardown, auth_headers):
@@ -202,6 +210,7 @@ def test_flight_deleted_data_destination(flight_variable_path_teardown, auth_hea
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing destination data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_empty_data_destination(flight_variable_path_teardown, auth_headers):
@@ -236,6 +245,7 @@ def test_flight_empty_data_destination(flight_variable_path_teardown, auth_heade
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty destination data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_deleted_data_aircraft(flight_variable_path_teardown, auth_headers):
@@ -275,6 +285,7 @@ def test_flight_deleted_data_aircraft(flight_variable_path_teardown, auth_header
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with non existing aircraft data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_empty_data_aircraft(flight_variable_path_teardown, auth_headers):
@@ -309,6 +320,7 @@ def test_flight_empty_data_aircraft(flight_variable_path_teardown, auth_headers)
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation request with empty aircraft data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 def test_flight_same_origin_destination_data(flight_variable_path_teardown, auth_headers):
@@ -343,6 +355,7 @@ def test_flight_same_origin_destination_data(flight_variable_path_teardown, auth
 
     assert flight_creation.status_code == 422, f"Expected 422, got {flight_creation.status_code}. This suggests the API accepted a flight creation with same origin and destination airport data, or failed to return the correct validation error."
 
+@pytest.mark.flights
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2, aircraft_data',[(good_airport_data_1, good_airport_data_2, good_aircraft_data)])

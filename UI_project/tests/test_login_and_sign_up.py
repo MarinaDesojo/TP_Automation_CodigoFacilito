@@ -8,8 +8,9 @@ from UI_project.conftest import driver
 from UI_project.utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE
 from UI_project.utils.config import PASSWORD_MAX_CHAR, PASSWORD_MAX_CHAR_PLUS1, EMAIL_MAX_CHAR, EMAIL_MAX_CHAR_PLUS1, EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_DOUBLE_AT, EMAIL_SPECIAL_CH_1, EMAIL_SPECIAL_CH_2, EMAIL_SPECIAL_CH_3, EMAIL_SPECIAL_CH_4, EMAIL_SPECIAL_CH_5, EMAIL_SPECIAL_CH_6, EMAIL_SPECIAL_CH_7
 
+@pytest.mark.web
 @pytest.mark.login
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_login_success(driver):
     login = LoginPage(driver)
 
@@ -19,8 +20,9 @@ def test_login_success(driver):
 # Usually on the login page I would test registered emails and passwords, but on this website that is not the case, so the approach is a little different
 # Usually there would be no need to test valid emails on the login page, only on the sign up page, because the user would not have been able to register it on the first place
 
+@pytest.mark.web
 @pytest.mark.login
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_login_success_max_email_char(driver):
     login = LoginPage(driver)
 
@@ -28,8 +30,9 @@ def test_login_success_max_email_char(driver):
     login.fill_login_form_success(EMAIL_MAX_CHAR, PASSWORD)
     login.verify_logged_in_text()
 
+@pytest.mark.web
 @pytest.mark.login
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_login_success_max_password_char(driver):
     login = LoginPage(driver)
 
@@ -37,9 +40,10 @@ def test_login_success_max_password_char(driver):
     login.fill_login_form_success(EMAIL_USER, PASSWORD_MAX_CHAR)
     login.verify_logged_in_text()
 
+@pytest.mark.web
 @pytest.mark.e2e
 @pytest.mark.login
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_login_success_e2e(driver):
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -51,6 +55,7 @@ def test_login_success_e2e(driver):
     login.verify_logged_in_text()
     login.go_to_home()
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_empty_fields_fail(driver):
@@ -59,6 +64,7 @@ def test_login_empty_fields_fail(driver):
     login.load()
     login.empty_login_form()
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_space_fields_fail(driver):
@@ -67,6 +73,7 @@ def test_login_space_fields_fail(driver):
     login.load()
     login.fill_login_form_fail(" ", " ")
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_no_email(driver):
@@ -83,6 +90,7 @@ def test_login_no_password(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_USER, "")
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_max_char_email_plus1(driver):
@@ -92,6 +100,7 @@ def test_login_max_char_email_plus1(driver):
     login.fill_login_form_fail(EMAIL_MAX_CHAR_PLUS1, " ")
 # Fail, unknown character limit on input, fail detected
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_max_char_password_plus1(driver):
@@ -101,6 +110,7 @@ def test_login_max_char_password_plus1(driver):
     login.fill_login_form_fail(EMAIL_USER, PASSWORD_MAX_CHAR_PLUS1)
 # Fail, unknown character limit on input, fail detected
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_1(driver):
@@ -109,6 +119,7 @@ def test_login_wrong_email_1(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_NO_AT, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_2(driver):
@@ -117,6 +128,7 @@ def test_login_wrong_email_2(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_NO_TEXT_POST_AT, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_3(driver):
@@ -125,6 +137,7 @@ def test_login_wrong_email_3(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_NO_TEXT_PRE_AT, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_4(driver):
@@ -133,6 +146,7 @@ def test_login_wrong_email_4(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_ONLY_AT, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_5(driver):
@@ -141,6 +155,7 @@ def test_login_wrong_email_5(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_DOUBLE_AT, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_6(driver):
@@ -149,6 +164,7 @@ def test_login_wrong_email_6(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_1, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_7(driver):
@@ -157,6 +173,7 @@ def test_login_wrong_email_7(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_2, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_8(driver):
@@ -165,6 +182,7 @@ def test_login_wrong_email_8(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_3, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_9(driver):
@@ -173,6 +191,7 @@ def test_login_wrong_email_9(driver):
     login.load()
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_4, PASSWORD)
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_10(driver):
@@ -182,6 +201,7 @@ def test_login_wrong_email_10(driver):
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_5, PASSWORD)
 # Fails, bug detected
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_11(driver):
@@ -191,6 +211,7 @@ def test_login_wrong_email_11(driver):
     login.fill_login_form_fail(EMAIL_SPECIAL_CH_6, PASSWORD)
 # Fails, bug detected
 
+@pytest.mark.web
 @pytest.mark.login
 @pytest.mark.fail
 def test_login_wrong_email_12(driver):
@@ -201,8 +222,9 @@ def test_login_wrong_email_12(driver):
 # Fails, bug detected
 
 
+@pytest.mark.web
 @pytest.mark.sign_up
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_sign_up_success(driver):
     signup = SignUpPage(driver)
 
@@ -211,8 +233,9 @@ def test_sign_up_success(driver):
     signup.verify_signed_up_text()
     signup.go_to_home()
 
+@pytest.mark.web
 @pytest.mark.sign_up
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_sign_up_email_and_space_fields_success(driver):
     signup = SignUpPage(driver)
 
@@ -221,9 +244,10 @@ def test_sign_up_email_and_space_fields_success(driver):
 # Email input field is the only one with conditions to meet, set by the browser, same as login
 # There are no restrictions or conditions to meet on the other fields
 
+@pytest.mark.web
 @pytest.mark.e2e
 @pytest.mark.sign_up
-@pytest.mark.happypath
+@pytest.mark.happy_path
 def test_sign_up_success_e2e(driver):
     homepage = HomePage(driver)
     header = HeaderPage(driver)
@@ -235,6 +259,7 @@ def test_sign_up_success_e2e(driver):
     signup.verify_signed_up_text()
     signup.go_to_home()
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_empty_fields_fail(driver):
@@ -243,6 +268,7 @@ def test_sign_up_empty_fields_fail(driver):
     signup.load()
     signup.empty_sign_up_form()
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_space_fields_fail(driver):
@@ -251,6 +277,7 @@ def test_sign_up_space_fields_fail(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", " ", " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_1(driver):
@@ -259,6 +286,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_1(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_NO_AT, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_2(driver):
@@ -267,6 +295,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_2(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_NO_TEXT_POST_AT, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_3(driver):
@@ -275,6 +304,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_3(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_NO_TEXT_PRE_AT, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_4(driver):
@@ -283,6 +313,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_4(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_ONLY_AT, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_5(driver):
@@ -291,6 +322,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_5(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_DOUBLE_AT, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_6(driver):
@@ -299,6 +331,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_6(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_1, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_7(driver):
@@ -307,6 +340,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_7(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_2, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_8(driver):
@@ -315,6 +349,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_8(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_3, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_9(driver):
@@ -323,6 +358,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_9(driver):
     signup.load()
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_4, " ", " ")
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_10(driver):
@@ -332,6 +368,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_10(driver):
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_5, " ", " ")
 # Fails, bug detected
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_11(driver):
@@ -341,6 +378,7 @@ def test_sign_up_wrong_email_and_space_fields_fail_11(driver):
     signup.fill_sign_up_form_fail(" ", " ", EMAIL_SPECIAL_CH_6, " ", " ")
 # Fails, bug detected
 
+@pytest.mark.web
 @pytest.mark.sign_up
 @pytest.mark.fail
 def test_sign_up_wrong_email_and_space_fields_fail_12(driver):

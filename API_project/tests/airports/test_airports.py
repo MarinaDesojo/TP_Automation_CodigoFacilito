@@ -10,17 +10,20 @@ from API_project.utils.api_helpers import api_request
 from API_project.utils.fixture_utils import auth_headers
 from API_project.utils.settings import AIRPORTS
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.happy_path_flow
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
 def test_create_clear_airport_new_1(create_clear_airport_1, airport_data_1):
     validate(instance=create_clear_airport_1, schema=airport_schema)
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.get_all_airports
 def test_get_all_airports(get_all_airports):
     validate(instance=get_all_airports, schema=airport_schema_array)
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2',[(good_airport_data, changed_airport_data)])
 def test_update_airport_data_not_iata_code(create_clear_airport_1, airport_data_1, airport_data_2, auth_headers):
@@ -38,6 +41,7 @@ def test_update_airport_data_not_iata_code(create_clear_airport_1, airport_data_
     check.equal(update_airport_2_json['country'], get_airport_1_json['country'], "Country mismatch")
 
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1, airport_data_2',[(good_airport_data, changed_airport_data_iata_code)])
@@ -51,6 +55,7 @@ def test_update_to_existing_iata_code(create_clear_airport_1, create_clear_airpo
     update = api_request(method="PUT", path=f"{AIRPORTS}/{airport_created_1_iata_code}", json=airport_data_2, headers=auth_headers)
     assert update.status_code == 422, f"Expected 422, got {update.status_code}. This suggests the API accepted updating the airport data to an already existing iata_code {airport_created_2_iata_code} when it shouldn't have, or failed to return the correct validation error."
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.parametrize('airport_data_1, airport_data_2',[(good_airport_data, changed_airport_data_iata_code)])
 def test_update_iata_code_airport(create_clear_airport_1, airport_data_1, airport_data_2, auth_headers):
@@ -105,6 +110,7 @@ def test_update_iata_code_airport(create_clear_airport_1, airport_data_1, airpor
     if api_request(method="GET", path=f"{AIRPORTS}/{update_airport_2_iata_code}", headers=auth_headers).status_code not in [400, 422]:
         api_request(method="DELETE", path=f"{AIRPORTS}/{update_airport_2_iata_code}", headers=auth_headers)
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1', [good_airport_data])
@@ -112,6 +118,7 @@ def test_double_create_airport(create_clear_airport_1, airport_data_1, auth_head
     repeat_create_airport = api_request(method="POST", path=AIRPORTS, headers=auth_headers, json=airport_data_1)
     assert repeat_create_airport.status_code in (400, 422), f"Expected 400 but got {repeat_create_airport.status_code}. This suggests the API accepted creating an airport with the same ariport data than an already existing airport, or failed to return the correct validation error."
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data', bad_airport_data)
@@ -133,6 +140,7 @@ def test_create_clear_airport_fail_negative_flow(create_clear_airport_negative_t
                 if delete_resp.status_code != 204:
                     print(f"Warning: Failed to delete airport {iata_code}")
 
+@pytest.mark.airports
 @pytest.mark.api
 @pytest.mark.fail
 @pytest.mark.parametrize('airport_data_1', [good_airport_data_1])
