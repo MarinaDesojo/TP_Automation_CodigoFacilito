@@ -33,7 +33,7 @@ def pytest_runtest_makereport(item, call):
     if rep.when == "call" and rep.failed:
         driver = item.funcargs.get("driver", None)
         if driver:
-            screenshot_dir = "tests/screenshots"
+            screenshot_dir = "UI_project/tests/screenshots"
             os.makedirs(screenshot_dir, exist_ok=True)
 
             timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
