@@ -10,7 +10,7 @@ from UI_project.pages.home_page import HomePage
 from UI_project.pages.menclothes_page import MenClothesPage
 from UI_project.pages.product_detail_page import ProductPage
 from UI_project.pages.womenclothes_page import WomenClothesPage
-from UI_project.conftest import driver
+from conftest import driver
 
 
 @pytest.mark.web

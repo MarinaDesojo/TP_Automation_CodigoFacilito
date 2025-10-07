@@ -4,7 +4,7 @@ from UI_project.pages.login_page import LoginPage
 from UI_project.pages.signup_page import SignUpPage
 from UI_project.pages.home_page import HomePage
 from UI_project.pages.header_page import HeaderPage
-from UI_project.conftest import driver
+from conftest import driver
 from UI_project.utils.config import EMAIL_USER, PASSWORD, FIRST_NAME, LAST_NAME, ZIP_CODE
 from UI_project.utils.config import PASSWORD_MAX_CHAR, PASSWORD_MAX_CHAR_PLUS1, EMAIL_MAX_CHAR, EMAIL_MAX_CHAR_PLUS1, EMAIL_NO_AT, EMAIL_NO_TEXT_POST_AT, EMAIL_NO_TEXT_PRE_AT, EMAIL_ONLY_AT, EMAIL_DOUBLE_AT, EMAIL_SPECIAL_CH_1, EMAIL_SPECIAL_CH_2, EMAIL_SPECIAL_CH_3, EMAIL_SPECIAL_CH_4, EMAIL_SPECIAL_CH_5, EMAIL_SPECIAL_CH_6, EMAIL_SPECIAL_CH_7
 

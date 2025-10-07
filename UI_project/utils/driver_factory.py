@@ -47,7 +47,7 @@ def create_driver(browser="chrome", headless=False):
         )
 
     else:
-        raise ValueError(f"Navegador no soportado: {browser}")
+        raise ValueError(f"Browser not supported: {browser}")
 
     driver.implicitly_wait(5)
     return driver
