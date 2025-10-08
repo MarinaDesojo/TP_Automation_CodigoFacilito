@@ -1,5 +1,5 @@
 import datetime, random, requests, string
-import pytest, time
+import pytest, time, logging
 from API_project.utils.api_helpers import api_request
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import admin_token, auth_headers
@@ -157,3 +157,5 @@ def create_clear_booking_fail_not_authenticated(create_clear_flight, passenger_d
     else:
         raise Exception(f"Booking code {booking_id} was not deleted after {MAX_RETRIES} attempts")
 
+    def pytest_configure(config):
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

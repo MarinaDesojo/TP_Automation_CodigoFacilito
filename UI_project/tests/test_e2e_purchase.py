@@ -1,4 +1,4 @@
-import pytest
+import pytest, logging
 #page objects
 from UI_project.pages.login_page import LoginPage
 from UI_project.pages.signup_page import SignUpPage
@@ -30,17 +30,20 @@ def test_shop_e2e(driver):
     header = HeaderPage(driver)
     men_clothes = MenClothesPage(driver)
 
+    logging.info("E2E test beginning - sign up")
     homepage.load()
     header.go_to_signup_page()
     signup.fill_sign_up_form_success(FIRST_NAME, LAST_NAME, EMAIL_USER, ZIP_CODE, PASSWORD)
     signup.verify_signed_up_text()
     signup.go_to_home()
 
+    logging.info("Login")
     header.go_to_login_page()
     login.fill_login_form_success(EMAIL_USER, PASSWORD)
     login.verify_logged_in_text()
     login.go_to_home()
 
+    logging.info("Product list pages and product detail pages")
     homepage.go_to_electronics_page()
     electronics.go_to_product_page_by_number_21_30("24")
     pdp.increase_product_qty("24")
@@ -50,17 +53,21 @@ def test_shop_e2e(driver):
     electronics.add_product_to_cart_by_number_21_30("22")
     header.go_to_cart_page()
 
+    logging.info("Cart tests")
     cart.increase_qty("Laptop")
     cart.decrease_qty("Smart Watch")
     cart.remove_from_cart("Laptop")
     cart.continue_shopping()
 
+    logging.info("Forgot to add one product, back to cart")
     homepage.go_to_men_clothes_page()
     men_clothes.add_product_to_cart_by_number_1_10("3")
     header.go_to_cart_page()
 
+    logging.info("Checkout")
     cart.go_to_checkout()
     checkout.fill_checkout_form(FIRST_NAME, LAST_NAME, EMAIL_USER, PHONE_NUMBER, ADDRESS, CITY, ZIP_CODE, COUNTRY)
     confirmation.validate_purchase_completion_heading()
     confirmation.validate_purchase_completion_message()
     confirmation.return_to_home()
+    logging.info("E2E test complete")

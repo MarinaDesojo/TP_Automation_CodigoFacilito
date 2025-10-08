@@ -1,4 +1,4 @@
-import pytest, time
+import pytest, time, logging
 from API_project.utils.api_helpers import api_request
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import admin_token, auth_headers
@@ -86,3 +86,6 @@ def create_clear_aircraft_fail_not_authenticated(aircraft_data, auth_headers):
             print("Warning: Aircraft creation response missing 'id', skipping delete")
     except Exception as e:
         print(f"Exception during cleanup: {e}")
+
+def pytest_configure(config):
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

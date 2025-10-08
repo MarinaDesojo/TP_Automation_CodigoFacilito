@@ -1,5 +1,5 @@
 import datetime, random, requests, string
-import pytest, time
+import pytest, time, logging
 from API_project.utils.api_helpers import api_request
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.utils.fixture_utils import admin_token, auth_headers
@@ -64,3 +64,6 @@ def create_payment_fail_not_authenticated(payment_data, auth_headers):
     payment_creation_status_code = payment_creation.status_code
 
     return payment_creation_status_code
+
+def pytest_configure(config):
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")

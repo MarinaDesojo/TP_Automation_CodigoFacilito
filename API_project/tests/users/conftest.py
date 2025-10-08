@@ -1,6 +1,5 @@
 import time
-
-import pytest, requests
+import pytest, requests, logging
 from API_project.utils.api_helpers import api_request
 from API_project.utils.settings import fake, BASE_URL, AUTH_LOGIN, USERS, AIRPORTS, FLIGHTS, BOOKINGS, PAYMENTS, AIRCRAFTS, USERS_ME
 from API_project.tests.users.test_schema import user_schema, changed_user_data, good_user_data, bad_user_data, user_schema_array
@@ -168,3 +167,6 @@ def create_clear_user_fail_not_authenticated(user_data, auth_headers):
             print("Warning: User creation response missing 'id', skipping delete")
     except Exception as e:
         print(f"Exception during cleanup: {e}")
+
+def pytest_configure(config):
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
