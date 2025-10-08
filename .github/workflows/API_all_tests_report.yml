@@ -4,6 +4,8 @@ run-name: API all tests generates html report
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   pyton-unit-tests:
