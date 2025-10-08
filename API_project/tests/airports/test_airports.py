@@ -19,7 +19,6 @@ def test_create_clear_airport_new_1(create_clear_airport_1, airport_data_1):
 
 @pytest.mark.airports
 @pytest.mark.api
-@pytest.mark.get_all_airports
 def test_get_all_airports(get_all_airports):
     validate(instance=get_all_airports, schema=airport_schema_array)
 
