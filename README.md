@@ -1,91 +1,100 @@
 # TP_Automation_CodigoFacilito
 
-Este proyecto implementa pruebas automatizadas end to end (E2E) utilizando:
+This project implements automated testing using:
 - 🐍 Python
-- 🧪 Pytest como framework de testing
-- 🕸️ Selenium WebDriver para interacción con el navegador
-- 🧱 Patrón Page Object Model (POM) para mantener el código limpio y reutilizable
+- 🧪 Pytest
+- 🕸️ Selenium WebDriver for browser interaction
+- 🧱 Page Object Model (POM) to keep code DRY
 
-Las pruebas están diseñadas para validar flujos clave en la aplicación, como login, registro, navegación por categorías, y procesos de compra.
+Tests are designed to validate key flows on both web and API.
 
-Arquitectura del proyecto:
+Project architecture:
 
-📁 tests/                → Archivos de test organizados por funcionalidad  
-📁 pages/                → Clases POM de cada página de la web  
-📁 utils/                → Helpers como driver factory, generadores de datos, config.py y dotenv  
-📄 conftest.py           → Fixtures compartidos  
-📄 pytest.ini            → Configuración de Pytest  
-📄 requirements.txt      → Dependencias del proyecto
+    📁 UI_project/           
+        📁 tests/          → Directories organized by endpoint, each with its own test.py and conftest.py  
+        📁 reports/        → Report directory for test generated reports  
+        📁 utils/          → Helpers like api helper, fixture, settings and config  
+    📁 API_project/        
+        📁 tests/          → Test.py files organized   
+        📁 pages/          → POM classes for each URL   
+        📁 utils/          → Helpers like driver factory, data generators, config.py and dotenv
+        📁 reports/        → Report directory for test generated reports  
+    📁 github/             → YML files for CI application on Github Actions  
+    📄 conftest.py          → UI fixtures, like driver and screenshot hook  
+    📄 pytest.ini           → Pytest markers and other settings  
+    📄 requirements.txt     → Project requirements (needed packages)
 
-Requisitos previos:
+Requirements:
 - Python 3.10+
-- Google Chrome (u otro navegador compatible)
-- pip (instalador de paquetes)
+- Google Chrome (Firefox or Edge)
+- pip (package installer)
 
-Instalar dependencias:
+How to install packages:
 pip install -r requirements.txt
 
-Ejecutar los tests:
-Desde la raíz del proyecto, ejecutá:
-👉 Para correr todos los tests:
-pytest -v
-👉 Para correr un archivo específico:
-pytest tests/test_login_and_sign_up.py
-👉 Para correr por markers (ej: login):
-pytest tests/test_navigation_and_content.py -m navigation
+markers =
+- web: UI web related tests
+- api: API related tests
+- e2e: End to end flow test
+- happy_path: Happy path tests
+- fail: Fail intended tests
+- login: Login flow related tests
+- sign_up: Sign un flow related tests
+- search: Search flow related tests
+- shop: Shop flow related test
+- navigation: Navigation related tests
+- content_verification: Content like text verification tests
+- users: API User endpoint related tests
+- airports: API Airports endpoint related tests
+- aircrafts: API Aircrafts endpoint related tests
+- flights: API Flights endpoint related tests
+- bookings: API Bookings endpoint related tests
+- payments: API Payments endpoint related tests
 
-markers:
-- api = API related tests
-- e2e = End to end flow test
-- happy_path = Happy path tests
-- fail = Fail intended tests
-- login = Login flow related tests
-- sign_up = Sign un flow related tests
-- search = Search flow related tests
-- shop = Shop flow related test
-- navigation = Navigation related tests
-- content_verification = Content like text verification tests
-- 
+UI website tested:
+https://shophub-commerce.vercel.app/
 
-Actualmente se utiliza Chrome por defecto.  
-La configuración está en `utils/driver_factory.py`.
-
-Opcionalmente podés modificarlo para correr en modo headless, otros navegadores, etc.
-Para realizar los test en modo headless (sin visual del navegador) modificar el archivo:
-conftest.py linea 16
-Con visual del navegador: driver = create_driver(headless=headless)
-Cambiar el valor de headless a True:
-Sin visual del navegador: driver = create_driver(headless=True)
+API tested:
+https://cf-automation-airline-api.onrender.com/
 
 
+To run the tests, go to the project root and:
 
+👉 To run all tests:
 
+- pytest
 
-📌 Faltantes a mi gusto:
-- Agregar los locator faltantes de la cart_page.
-- Crear todos los métodos custom para cada product_number en la product_detail_page.
-- Arreglar algunos locator, en lugar de usar XPATH, usar TAG_NAME o CSS_SELECTOR de ser posible.
-- Validar todo en el formulario de checkout.
-- Validar headings y textos, que digan lo que deben decir.
-- Validar que el botón "-" en la product detail page no haga nada, o que se encuentre deshabilitado preferentemente.
-- Test para validar que se actualice correctamente la cantidad de productos que se muestra al apretar los botones "-" y "+" en la product detail page.
-- Test para validar que el precio se actualice correctamente al agregar productos.
-- Test para validar que el precio en la product details page y el cart sean el mismo.
-- Test para validar que el precio en el detalle del cart y el Order summary sean iguales.
-- Test para validar la suma de valores en el Order summary, tanto en el cart como en el checkout.
-- Test para validar por qué a veces los placeholder cambian aleatoriamente.
-- Test para validar etiquetas/labels y placeholder de los input.
+👉 To run a specific file:
 
-Tests que agregaría:
-- Validar la aparición de un mensaje de que el producto fue agregado al carrito satisfactoriamente.
-- Validar la aparición de un mensaje de que el producto fue marcado como favorito, también de que seguramente la visual del botón cambie, por ejemplo un cambio de color por CSS.
-- Validar mensajes de error en el login o sign up, en caso de que fueran custom y no de navegador.
-- Validar el search flow, que aparezcan resultados válidos relacionados a la búsqueda, por ejemplo que contentan la palabra buscada.
+- pytest API_project/tests/users/test_users
+- pytest UI_project/tests/test_login_and_sign_up.py
 
+👉 To run a specific test inside a file:
 
-📌To Do / Ideas futuras
-- Integración con CI (GitHub Actions)
-- Soporte multi-navegador
-- Generación de reportes HTML automáticos
+- pytest UI_project/tests/test_login_and_sign_up.py::test_login_wrong_email_11
 
+👉 To run by markers (example: login):
+
+- pytest -m login
+
+👉 To run all website ui tests or all api tests, run:
+- pytest -m web
+- pytest -m api
+
+👉 To add another marker, for example "e2e", run:
+- pytest -m "web and e2e"
+
+👉 Chrome is the default browser used for web tests, in case you want to test on Firefox or Edge, run:
+- pytest -m web --browser=firefox
+- pytest -m web --browser=edge
+
+👉 To run the test suite headless, add --headless, for example:
+- pytest -m web --headless
+
+👉 To generate a report that includes the embedded screenshot from failed tests, run:
+- pytest --html=UI_project/reports/{name_of_the_report}.html --self-contained-html
+- pytest --html=API_project/reports/{name_of_the_report}.html --self-contained-html
+
+👉 To see on the console (CLI) logs add --log-cli-level=INFO, for example:
+- pytest -m web --log-cli-level=INFO
 
