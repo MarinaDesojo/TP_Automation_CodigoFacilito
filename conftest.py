@@ -53,9 +53,9 @@ def pytest_runtest_makereport(item, call):
             image_extra = extras.image(encoded_image, mime_type='image/png')
 
             if hasattr(rep, "extra"):
-                rep.extra.append(image_extra)
+                rep.extras.append(image_extra)
             else:
-                rep.extra = [image_extra]
+                rep.extras = [image_extra]
 
 def pytest_configure(config):
     logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
