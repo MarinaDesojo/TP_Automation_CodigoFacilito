@@ -36,7 +36,7 @@ jobs:
       run: |
         echo "Waiting for API to be available..."
         for i in {1..10}; do
-          if curl --silent --head --fail https://cf-automation-airline-api.onrender.com/health; then
+          if curl --silent --head --fail https://cf-automation-airline-api.onrender.com/docs#/; then
             echo "API available"
             break
           else
