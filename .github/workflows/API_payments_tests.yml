@@ -28,6 +28,19 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Wait for external API to be ready
+      run: |
+        echo "Waiting for API to be available..."
+        for i in {1..10}; do
+          if curl --silent --head --fail https://cf-automation-airline-api.onrender.com/health; then
+            echo "API available"
+            break
+          else
+            echo "Try $i: API still not responding, waiting 5 seconds..."
+            sleep 5
+          fi
+        done
+
     - name: Run tests with pytest
       env:
         PYTHONPATH: ${{ github.workspace }}
